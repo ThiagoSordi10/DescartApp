@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'collect',
+    'core',
+    'discard'
 ]
 
 MIDDLEWARE = [
@@ -121,13 +124,15 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
   os.path.join(BASE_DIR, 'descartapp/static')
-]s
+]
 
 #Media
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 ALLOWED_HOSTS = ['*']
 X_FRAME_OPTIONS = '*'
+
+AUTH_USER_MODEL = 'core.User'
 
 # Messages
 from django.contrib.messages import constants as messages
