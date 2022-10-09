@@ -11,22 +11,40 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os, sys
+import io
+
+import environ
+import google.auth
+
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+DEBUG = False
+env_type = os.getenv("ENV_TYPE")
+env = environ.Env()
+
+if os.path.isfile(f".env.{env_type}"):
+    env.read_env(f".env.{env_type}")
+else:
+    raise ImproperlyConfigured(f'The specified .env.{env_type} was not found in the root directory.')
+
+# Attempt to load the Project ID into the environment, safely failing on error.
+try:
+    _, os.environ["GOOGLE_CLOUD_PROJECT"] = google.auth.default()
+except google.auth.exceptions.DefaultCredentialsError:
+    pass
+
+# Use local .env file in dev mode
+if env_type == "local":
+    DEBUG = True
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'b#s*_o(3t3ai_k(c5po@h7a=nj5#vjkd3u7ckhnx@)mi=8fn67'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+SECRET_KEY = env("SECRET_KEY")
 
 # Application definition
 
@@ -77,12 +95,20 @@ WSGI_APPLICATION = 'descartapp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+# Database
+# Use django-environ to parse the connection string
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME'),
+            'USER': env('DB_USER'),
+            'PASSWORD': env('DB_PASS'),
+            'HOST': env('DB_HOST'),
+            'PORT': env('DB_PORT')
+        }
     }
-}
+
+print(f"DB: {env('DATABASE_URL')}")
 
 
 # Password validation
@@ -129,6 +155,14 @@ STATICFILES_DIRS = [
 #Media
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+if env_type == "prod":
+    GS_BUCKET_NAME = env("GS_BUCKET_NAME")
+    DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+    STATICFILES_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+    GS_DEFAULT_ACL = "publicRead"
+
+
 ALLOWED_HOSTS = ['*']
 X_FRAME_OPTIONS = '*'
 
