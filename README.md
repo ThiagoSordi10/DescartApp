@@ -1,43 +1,33 @@
-# Developing Django on Repl.it
+# Running local
 
-- Fork this template to get started
-- Simply hit run to start the server
-- The server will autoreload as needed. You don't need to restart the server manually.
+First, you have to clone this repository and have Docker installed on your machine.
 
-## Add your first view
+After, inside the project folder you execute the following command in terminal:
 
-1. Create a file under `mysite` named `views.py` with the following contents:
+```docker volume create --name=pgdata```
 
-```
-from django.http import HttpResponse
+It creates a volume for our local database. Then, run:
 
+```docker-compose up -d```
+It will build the image of local django environment, and run the database also.
 
-def index(request):
-    return HttpResponse("Hello, world.")
-```
+With your containers running now, you can go into the django container terminal:
 
-2. Add a url pattern under `mysite/urls.py`. It should look like this:
+```docker exec -it <django_container_id> /bin/bash```
 
-```
-from django.contrib import admin
-from django.urls import path
-from . import views
+Now you are controlling Django environment, you could generate migration, apply migrations, collect static and run server.
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', views.index, name='index'),
-]
-```
+```export ENV_TYPE=local``` (to use local environment variables)
 
-## Shell
+```python manage.py makemigrations```
 
-Django utilizes the shell for managing your site. For this click on the `?` in the lower-right corner and click "Workspace shortcuts" from there you can open a new shell pane. 
+```python manage.py migrate```
 
-## Database
+```python manage.py collectstatic```
 
-By default this template utilizes the sqlite database engine. While this is fine for development it won't work with external users of your app as we don't persist changes to files when they happen outside the development environment. 
+```python manage.py runserver 0.0.0.0:8000```
 
-We suggest bringing a database using an outside service. 
+or even install new poetry dependencies:
 
-See Django documentation on how to setup a database: https://docs.djangoproject.com/en/3.0/intro/tutorial02/
+```poetry install```
 
