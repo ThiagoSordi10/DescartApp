@@ -1,0 +1,70 @@
+steps:
+  # 0. Make the .env file
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+    - '-c'
+    - |
+      gcloud secrets versions access latest --secret=django_app_settings > .env.${_ENV_TYPE}
+    id: ENV
+
+  # 1. Docker Build
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - '--no-cache'
+      - '--network=cloudbuild'
+      - '-t'
+      - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA'
+      - .
+      - '-f'
+      - Dockerfile
+      - '--build-arg'
+      - 'ENV_TYPE=${_ENV_TYPE}'
+    id: Build
+
+  # 2. Docker push to Google Artifact Registry
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA'
+    id: Push
+
+  # 3. Migrate
+  - name: gcr.io/google-appengine/exec-wrapper
+    args:
+      - '-i'
+      - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA'
+      - '-s'
+      - '${PROJECT_ID}:${_DEPLOY_REGION}:${_DB_INSTANCE}'
+      - '-e'
+      - 'SETTINGS_NAME=${_SECRET_SETTINGS_NAME}'
+      - '--'
+      - 'python'
+      - 'manage.py'
+      - 'migrate'
+    id: Migrate
+
+  # 4. Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    args:
+      - run
+      - services
+      - update
+      - $_SERVICE_NAME
+      - '--platform=managed'
+      - '--image=$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA'
+      - >-
+        --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS
+      - '--region=$_DEPLOY_REGION'
+      - '--quiet'
+    id: Deploy
+    entrypoint: gcloud
+
+# Store images in Google Artifact Registry
+images:
+  - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA'
+
+tags:
+  - gcp-cloud-build-deploy-cloud-run
+  - gcp-cloud-build-deploy-cloud-run-managed
