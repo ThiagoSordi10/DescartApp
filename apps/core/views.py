@@ -64,7 +64,7 @@ class LoginUserView(LoginView):
         """Login"""
         auth_login(self.request, form.get_user())
 
-        return HttpResponseRedirect(reverse_lazy('signup'))
+        return HttpResponseRedirect(reverse_lazy('create_demand'))
 
 class LogoutUserView(LogoutView):
     next_page: Any = reverse_lazy('login')

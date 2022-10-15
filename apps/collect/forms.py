@@ -7,3 +7,4 @@ class DemandForm(forms.ModelForm):
     
     class Meta:
         model = Demand
+        exclude = ("collector", )

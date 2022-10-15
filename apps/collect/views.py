@@ -1,4 +1,7 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.views.generic import CreateView
@@ -20,7 +23,7 @@ class BaseAddress():
     success_url = reverse_lazy("demands_list")
 
 
-class BaseDetailDemand(BaseDemand""", UserPassesTestMixin"""):
+class BaseDetailDemand(BaseDemand):
 
     # def test_func(self):
     #     try: 
@@ -33,7 +36,7 @@ class BaseDetailDemand(BaseDemand""", UserPassesTestMixin"""):
         handler = super().dispatch(request, *args, **kwargs)
         try: 
             user = Collector.objects.get(user = self.request.user)
-            return handler
+            raise PermissionDenied
         except Collector.DoesNotExist:
             raise PermissionDenied
 
