@@ -4,12 +4,19 @@ from core.models import BaseModel, LogicDeletable, Collector
 
 class Demand(BaseModel, LogicDeletable):
 
+  STATUS_CHOICES = (
+        ("o", "Open"),
+        ("c", "Closed"),
+        ("p", "Paused")
+    )
+
   unit_price = models.DecimalField(max_digits=10, decimal_places=4)
   max_quantity = models.DecimalField(max_digits=10, decimal_places=4)
   min_quantity = models.DecimalField(max_digits=10, decimal_places=4)
   measure = models.CharField(max_length=25)
   item = models.CharField(max_length=255)
   collector = models.ForeignKey(Collector, on_delete=models.CASCADE)
+  status = models.CharField(max_length=1, choices=STATUS_CHOICES, blank=False, null=False, default="o")
 
   def __str__(self):
       return self.item
