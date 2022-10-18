@@ -17,6 +17,62 @@ from .forms import LoginForm
 from .models import Collector, Discarder
 
 
+class SignUpUserCollectorView(CreateView):
+    form_class = SignUpForm
+    template_name: str = 'user/signup_collector.html'
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['msg'] = self.request.session.pop('msg', None)
+        context['success'] = self.request.session.pop('success', False)
+        return context
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        user = form.save(commit = False)
+        names = form.cleaned_data.get("name").split()
+        user.first_name = names[0]
+        user.last_name = " ".join(names[1:])
+        user.is_active = True
+        user = user.save()
+        c = Collector(user = user)
+        c.save()
+
+        self.request.session['success'] = True
+        self.request.session['msg'] = 'User Collector created - please <a href="/login">login</a>.'
+        return HttpResponseRedirect(reverse_lazy('signup_collector'))
+
+    def form_invalid(self, form: BaseModelForm) -> HttpResponse:
+        self.request.session['msg'] = 'Form is invalid'
+        return HttpResponseRedirect(reverse_lazy('signup_collector'))
+
+class SignUpUserDiscardView(CreateView):
+    form_class = SignUpForm
+    template_name: str = 'user/signup_discarder.html'
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['msg'] = self.request.session.pop('msg', None)
+        context['success'] = self.request.session.pop('success', False)
+        return context
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        user = form.save(commit = False)
+        names = form.cleaned_data.get("name").split()
+        user.first_name = names[0]
+        user.last_name = " ".join(names[1:])
+        user.is_active = True
+        user = user.save()
+        d = Discarder(user = user)
+        d.save()
+
+        self.request.session['success'] = True
+        self.request.session['msg'] = 'User Discarder created - please <a href="/login">login</a>.'
+        return HttpResponseRedirect(reverse_lazy('signup_discarder'))
+
+    def form_invalid(self, form: BaseModelForm) -> HttpResponse:
+        self.request.session['msg'] = 'Form is invalid'
+        return HttpResponseRedirect(reverse_lazy('signup_discarder'))
+
 class SignUpUserView(CreateView):
     form_class = SignUpForm
     template_name: str = 'user/signup.html'
