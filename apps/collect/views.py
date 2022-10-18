@@ -48,6 +48,9 @@ class DemandCreateView(BaseDemand, CreateView):
 
     form_class = DemandForm
     template_name = "demand/new.html"
+    extra_context = {
+        "method": "Create"
+    }
 
     def form_valid(self, form):
         demand = form.save(commit = False)
@@ -79,6 +82,9 @@ class DemandUpdateView(BaseDemand, UpdateView):
 
     form_class = DemandUpdateForm
     template_name = "demand/new.html"
+    extra_context = {
+        "method": "Update"
+    }
 
     def form_valid(self, form):
         demand = form.save(commit = False)
