@@ -47,7 +47,7 @@ class BaseAddress():
 class DemandCreateView(BaseDemand, CreateView):
 
     form_class = DemandForm
-    template_name = "demand/new.html"
+    template_name = "demand/form.html"
     extra_context = {
         "method": "Create"
     }
@@ -81,7 +81,7 @@ class DemandListView(BaseDemand, ListView):
 class DemandUpdateView(BaseDemand, UpdateView):
 
     form_class = DemandUpdateForm
-    template_name = "demand/new.html"
+    template_name = "demand/form.html"
     extra_context = {
         "method": "Update"
     }
@@ -99,7 +99,7 @@ class DemandUpdateView(BaseDemand, UpdateView):
 class DemandAddressesView(BaseDemand, UpdateView):
 
     form_class = DemandAddressesForm
-    template_name = "demand/add_address.html"
+    template_name = "demand/demand_address.html"
 
     def get_form_kwargs(self):
         kwargs = super(DemandAddressesView, self).get_form_kwargs()
