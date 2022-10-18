@@ -78,13 +78,15 @@
                   </div>
                   <span class="text-error">{{ form.max_quantity.errors }}</span>
                 </div>
+                {% if form.status %}
                 <div class="col-lg-6">
                   <div class="form-group">
-                    <label class="form-control-label" for="id_addresses">Addresses</label>
-                    {{ form.addresses }}
+                    <label class="form-control-label" for="input-max_quantity">Status</label>
+                    {{ form.status }}
                   </div>
-                  <span class="text-error">{{ form.addresses.errors }}</span>
+                  <span class="text-error">{{ form.status.errors }}</span>
                 </div>
+                {% endif %}
               </div>
             </div>
             <div class="text-center">
