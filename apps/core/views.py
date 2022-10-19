@@ -16,10 +16,30 @@ from .forms import SignUpForm
 from .forms import LoginForm
 from .models import Collector, Discarder
 
+def user_type_redirect(request: HttpRequest) -> HttpResponse:
+    try: 
+        user = Collector.objects.get(user = request.user)
+        return HttpResponseRedirect(reverse_lazy(settings.LOGIN_REDIRECT_URL_COLLECTOR))
+    except Collector.DoesNotExist:
+        try: 
+            user = Discarder.objects.get(user = request.user)
+            return HttpResponseRedirect(reverse_lazy(settings.LOGIN_REDIRECT_URL_DISCARD))
+        except Discarder.DoesNotExist:
+            user = None        
 
-class SignUpUserView(CreateView):
+class UserAuthenticatedView():
+
+    def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        if not request.user.is_anonymous:
+            user_type_redirect(request)      
+        return super(UserAuthenticatedView, self).get(request, *args, **kwargs)
+
+class SignUpUserView(CreateView, UserAuthenticatedView):
     form_class = SignUpForm
     template_name: str = 'user/signup.html'
+
+    def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        return super(SignUpUserView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -37,34 +57,57 @@ class SignUpUserView(CreateView):
 
         self.request.session['success'] = True
         self.request.session['msg'] = 'User created - please <a href="/login">login</a>.'
-        return HttpResponseRedirect(reverse_lazy('signup'))
+        return user
 
     def form_invalid(self, form: BaseModelForm) -> HttpResponse:
         self.request.session['msg'] = 'Form is invalid'
-        return HttpResponseRedirect(reverse_lazy('signup'))
 
-class LoginUserView(LoginView):
+class SignUpUserCollectorView(SignUpUserView):
+
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super(SignUpUserCollectorView, self).get_context_data(**kwargs)
+        context['user_type'] = 'Collector'
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        user = super(SignUpUserCollectorView, self).form_valid(form)
+        c = Collector(user = user)
+        c.save()
+        return HttpResponseRedirect(reverse_lazy('signup_collector'))
+
+    def form_invalid(self, form:BaseModelForm) -> HttpResponse:
+        super(SignUpUserCollectorView, self).form_invalid(form)
+        return HttpResponseRedirect(reverse_lazy('signup_collector'))
+
+
+class SignUpUserDiscardView(SignUpUserView):
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super(SignUpUserDiscardView, self).get_context_data(**kwargs)
+        context['user_type'] = 'Discarder'
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        user = super(SignUpUserDiscardView, self).form_valid(form)
+        d = Discarder(user = user)
+        d.save()
+        return HttpResponseRedirect(reverse_lazy('signup_discarder'))
+
+    def form_invalid(self, form: BaseModelForm) -> HttpResponse:
+        super(SignUpUserDiscardView, self).form_invalid(form)
+        return HttpResponseRedirect(reverse_lazy('signup_discarder'))
+
+
+class LoginUserView(LoginView, UserAuthenticatedView):
     form_class = LoginForm
     template_name: str = 'user/login.html'
 
     def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
-        if not request.user.is_anonymous:
-            try: 
-                user = Collector.objects.get(user = request.user)
-                return HttpResponseRedirect(reverse_lazy(settings.LOGIN_REDIRECT_URL_COLLECTOR))
-            except Collector.DoesNotExist:
-                try: 
-                    user = Discarder.objects.get(user = request.user)
-                    return HttpResponseRedirect(reverse_lazy(settings.LOGIN_REDIRECT_URL_DISCARD))
-                except Discarder.DoesNotExist:
-                    user = None        
         return super(LoginUserView, self).get(request, *args, **kwargs)
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         """Login"""
         auth_login(self.request, form.get_user())
-
-        return HttpResponseRedirect(reverse_lazy('create_demand'))
+        user_type_redirect(self.request)      
 
 class LogoutUserView(LogoutView):
     next_page: Any = reverse_lazy('login')
