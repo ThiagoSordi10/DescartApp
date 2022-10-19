@@ -107,6 +107,9 @@ class LoginUserView(UserAuthenticatedView, LoginView):
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         """Login"""
         auth_login(self.request, form.get_user())
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return HttpResponseRedirect(next_url)
         return user_type_redirect(self.request)      
 
 class LogoutUserView(LogoutView):
