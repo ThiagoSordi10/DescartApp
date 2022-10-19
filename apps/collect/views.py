@@ -37,12 +37,11 @@ class BaseDetailDemand(BaseDemand):
 
     def dispatch(self, request, *args, **kwargs):
         try:
-            super(BaseDetailDemand, self).dispatch(request, *args, **kwargs)
+            handler = super(BaseDetailDemand, self).dispatch(request, *args, **kwargs)
             self.object = self.get_object()
             if self.object.collector != request.user.collector:
                 raise PermissionDenied
-            context = self.get_context_data(object=self.object)
-            return self.render_to_response(context)
+            return handler
         except PermissionDenied:
             raise PermissionDenied
 
