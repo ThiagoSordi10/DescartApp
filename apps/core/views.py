@@ -31,10 +31,10 @@ class UserAuthenticatedView():
 
     def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
         if not request.user.is_anonymous:
-            user_type_redirect(request)      
+            return user_type_redirect(request)      
         return super(UserAuthenticatedView, self).get(request, *args, **kwargs)
 
-class SignUpUserView(CreateView, UserAuthenticatedView):
+class SignUpUserView(UserAuthenticatedView, CreateView):
     form_class = SignUpForm
     template_name: str = 'user/signup.html'
 
@@ -97,7 +97,7 @@ class SignUpUserDiscardView(SignUpUserView):
         return HttpResponseRedirect(reverse_lazy('signup_discarder'))
 
 
-class LoginUserView(LoginView, UserAuthenticatedView):
+class LoginUserView(UserAuthenticatedView, LoginView):
     form_class = LoginForm
     template_name: str = 'user/login.html'
 
@@ -107,7 +107,7 @@ class LoginUserView(LoginView, UserAuthenticatedView):
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         """Login"""
         auth_login(self.request, form.get_user())
-        user_type_redirect(self.request)      
+        return user_type_redirect(self.request)      
 
 class LogoutUserView(LogoutView):
     next_page: Any = reverse_lazy('login')
