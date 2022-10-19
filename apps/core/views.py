@@ -68,6 +68,7 @@ class SignUpUserCollectorView(SignUpUserView):
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super(SignUpUserCollectorView, self).get_context_data(**kwargs)
         context['user_type'] = 'Collector'
+        return context
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         user = super(SignUpUserCollectorView, self).form_valid(form)
@@ -85,6 +86,7 @@ class SignUpUserDiscardView(SignUpUserView):
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super(SignUpUserDiscardView, self).get_context_data(**kwargs)
         context['user_type'] = 'Discarder'
+        return context
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         user = super(SignUpUserDiscardView, self).form_valid(form)
