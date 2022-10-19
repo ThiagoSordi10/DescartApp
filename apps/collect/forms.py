@@ -46,43 +46,8 @@ class DemandForm(forms.ModelForm):
         fields = ("unit_price", "max_quantity", "min_quantity", "measure", "item", )
 
 
-class DemandUpdateForm(forms.ModelForm):
+class DemandUpdateForm(DemandForm):
 
-    item = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": "Item",
-                "class": "form-control"
-            }
-        ))  
-    max_quantity = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": "Maximum quantity",
-                "class": "form-control"
-            }
-        ))
-    min_quantity = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": "Minimum quantity",
-                "class": "form-control"
-            }
-        ))
-    measure = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": "Measure unit",
-                "class": "form-control"
-            }
-        ))
-    unit_price = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": "Unit price",
-                "class": "form-control"
-            }
-        ))
     status = forms.ChoiceField(
         choices = Demand.STATUS_CHOICES,
         widget=forms.Select(
