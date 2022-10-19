@@ -33,14 +33,18 @@ class BaseAddress():
     success_url = reverse_lazy("list_demand")
 
 
-# class BaseDetailDemand(BaseDemand):
+class BaseDetailDemand(BaseDemand):
 
-    # def test_func(self):
-    #     try: 
-    #         user = Collector.objects.get(user = self.request.user)
-    #         return True
-    #     except Collector.DoesNotExist:
-    #         raise PermissionDenied
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            super(BaseDetailDemand, self).dispatch(request, *args, **kwargs)
+            self.object = self.get_object()
+            if self.object.collector != request.user.collector:
+                raise PermissionDenied
+            context = self.get_context_data(object=self.object)
+            return self.render_to_response(context)
+        except PermissionDenied:
+            raise PermissionDenied
 
 
 @method_decorator(login_required, name='dispatch')
@@ -78,7 +82,7 @@ class DemandListView(BaseDemand, ListView):
 
 
 @method_decorator(login_required, name='dispatch')
-class DemandUpdateView(BaseDemand, UpdateView):
+class DemandUpdateView(BaseDetailDemand, UpdateView):
 
     form_class = DemandUpdateForm
     template_name = "demand/form.html"
