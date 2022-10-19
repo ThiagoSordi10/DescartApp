@@ -87,7 +87,7 @@ class DemandUpdateView(BaseDemand, UpdateView):
     }
 
     def form_valid(self, form):
-        demand = form.save(commit = False)
+        demand = form.save(commit = True)
         return HttpResponseRedirect(reverse_lazy("demand_address", args=[demand.id]))
 
 # @method_decorator(login_required, name='dispatch')
