@@ -7,6 +7,8 @@ from django.core.exceptions import PermissionDenied
 from django.views.generic import CreateView, ListView, UpdateView
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
+from core.views_mixins import AjaxResponseMixin, JsonRequestResponseMixin
+# from braces.views import AjaxResponseMixin, JsonRequestResponseMixin
 from .models import Demand, Address, AddressDemand
 from .forms import DemandForm, DemandUpdateForm, DemandAddressesForm
 from core.models import Collector
@@ -97,6 +99,23 @@ class DemandUpdateView(BaseDetailDemand, UpdateView):
 # class DemandDeleteView(BaseDetailCaptacao, DeleteView):
 
 #     template_name = "captacoes/delete.html"
+
+@method_decorator(login_required, name='dispatch')
+class DemandUpdateStatusView(JsonRequestResponseMixin, AjaxResponseMixin, BaseDetailDemand,  UpdateView):
+
+    require_json = True
+
+    def put_ajax(self, request, *args, **kwargs):
+        try:
+            status = self.request_json[u"status"]
+        except KeyError:
+            error_dict = {"message": "your order must include a status"}
+            return self.render_bad_request_response(error_dict)
+        demand = self.get_object()
+        demand.status = status
+        demand.save()
+        return self.render_json_response({})
+
 
 @method_decorator(login_required, name='dispatch')
 class DemandAddressesView(BaseDemand, UpdateView):

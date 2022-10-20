@@ -22,8 +22,6 @@
     </div>
   </div>
 </div>
-
-  
   
   <!-- Page content -->
   <div class="container-fluid mt--6" style="background: #9bbf7f !important;">
@@ -93,7 +91,7 @@
                       </a>
                       <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                         <a class="dropdown-item" href="{% url 'update_demand' demand.id %}">Edit</a>
-                        <a class="dropdown-item" href="#">Pause demand</a>
+                        <a class="dropdown-item status-demand" href="#" value="{{ demand.id }}" data-status="{{demand.status}}">{% if demand.status == 'o' %}Close{% else %}Open{% endif %} demand</a>
                         <a class="dropdown-item text-danger" href="#">Delete</a>
                       </div>
                     </div>
@@ -146,4 +144,33 @@
 {% endblock content %}
 
 <!-- Specific JS goes HERE --> 
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+
+<script>
+  $('.status-demand').click(function(){
+    var status = $(this).attr('data-status');
+    if(status == 'o'){
+      status = 'c';
+    }else{
+      status = 'o';
+    }
+    var baseUrl = "{% url 'update_demand_status' 111 %}";
+    baseUrl = baseUrl.replace("111", $(this).attr('value'));
+      $.ajax({
+               type: "PUT",
+               url: baseUrl,
+               headers:{'X-CSRFToken':'{{csrf_token}}'},
+               data: JSON.stringify({
+                        'status': status
+                      }),
+               dataType: "json",
+               success: function(response) {
+                location.reload();
+                }
+  
+          });
+  
+    })
+  </script>
+
+{% endblock javascripts %}

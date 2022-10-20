@@ -7,7 +7,6 @@ class Demand(BaseModel, LogicDeletable):
   STATUS_CHOICES = (
         ("o", "Open"),
         ("c", "Closed"),
-        ("p", "Paused")
     )
 
   unit_price = models.DecimalField(max_digits=10, decimal_places=4)
