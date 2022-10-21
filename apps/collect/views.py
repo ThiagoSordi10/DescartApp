@@ -11,6 +11,7 @@ from core.views_mixins import AjaxResponseMixin, JsonRequestResponseMixin
 # from braces.views import AjaxResponseMixin, JsonRequestResponseMixin
 from .models import Demand, Address, AddressDemand
 from .forms import DemandForm, DemandUpdateForm, DemandAddressesForm
+from .forms import AdressForm, DemandForm, DemandUpdateForm, DemandAddressesForm
 from core.models import Collector
 
 class BaseDemand():
@@ -135,3 +136,16 @@ class DemandAddressesView(BaseDemand, UpdateView):
             AddressDemand.objects.create(address=address, demand_id=demand_id)
         AddressDemand.objects.filter(demand_id=demand_id).exclude(address__in=form.cleaned_data['addresses']).delete()
         return HttpResponseRedirect(self.success_url)
+
+@method_decorator(login_required, name='dispatch')
+class AdressCreateView(BaseAddress, CreateView):
+    
+    form_class = AdressForm
+    template_name = "address/new.html"
+
+    def form_valid(self, form):
+        adress = form.save(commit = False)
+        adress.collector = self.request.user.collector
+        adress.save()
+        return HttpResponseRedirect(reverse_lazy("list_demand"))
+
