@@ -31,7 +31,7 @@ class LogicDeletable(models.Model):
     excluded_by = models.ForeignKey(User, related_name='%(class)s_excluded_by', null=True, blank=True, on_delete=models.SET_NULL)
     excluded_at = models.DateTimeField(null=True, blank=True)
 
-    objects = WithExcludedManager()
+    objects = WithoutExcludedManager()
     with_excluded = WithExcludedManager()
 
     def delete(self, using=None):

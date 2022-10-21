@@ -100,8 +100,7 @@ class DemandDeleteView(JSONResponseMixin, AjaxResponseMixin, BaseDetailDemand, D
 
     def delete_ajax(self, request, *args, **kwargs):
         demand = self.get_object()
-        print(demand)
-        demand.delete()
+        demand.logic_delete(request.user)
         return self.render_json_response({})
 
 @method_decorator(login_required, name='dispatch')
