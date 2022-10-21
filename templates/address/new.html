@@ -41,49 +41,65 @@
               <div class="row">
                 <div class="col-lg-6">
                   <div class="form-group">
-                    <label class="form-control-label" for="input-item">Item</label>
-                    {{ form.item }}
+                    <label class="form-control-label" for="input-street">Street</label>
+                    {{ form.street }}
                   </div>
-                  <span class="text-error">{{ form.item.errors }}</span>
+                  <span class="text-error">{{ form.street.errors }}</span>
                 </div>
                 <div class="col-lg-6">
                   <div class="form-group">
-                    <label class="form-control-label" for="input-measure">Measure</label>
-                    {{ form.measure }}
+                    <label class="form-control-label" for="input-district">District</label>
+                    {{ form.district }}
                   </div>
-                  <span class="text-error">{{ form.measure.errors }}</span>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label class="form-control-label" for="input-unit_price">Unit price</label>
-                    {{ form.unit_price }}
-                  </div>
-                  <span class="text-error">{{ form.unit_price.errors }}</span>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label class="form-control-label" for="input-min_quantity">Minimum quantity</label>
-                    {{ form.min_quantity }}
-                  </div>
-                  <span class="text-error">{{ form.min_quantity.errors }}</span>
+                  <span class="text-error">{{ form.district.errors }}</span>
                 </div>
               </div>
               <div class="row">
                 <div class="col-lg-6">
                   <div class="form-group">
-                    <label class="form-control-label" for="input-max_quantity">Maximum quantity</label>
-                    {{ form.max_quantity }}
+                    <label class="form-control-label" for="input-number">Number</label>
+                    {{ form.number }}
                   </div>
-                  <span class="text-error">{{ form.max_quantity.errors }}</span>
+                  <span class="text-error">{{ form.number.errors }}</span>
                 </div>
                 <div class="col-lg-6">
                   <div class="form-group">
-                    <label class="form-control-label" for="id_addresses">Addresses</label>
-                    {{ form.addresses }}
+                    <label class="form-control-label" for="input-complement">Complement</label>
+                    {{ form.complement }}
                   </div>
-                  <span class="text-error">{{ form.addresses.errors }}</span>
+                  <span class="text-error">{{ form.complement.errors }}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-zip_code">Zip Code</label>
+                    {{ form.zip_code }}
+                  </div>
+                  <span class="text-error">{{ form.zip_code.errors }}</span>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-city">City</label>
+                    {{ form.city }}
+                  </div>
+                  <span class="text-error">{{ form.city.errors }}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-state">State</label>
+                    {{ form.state }}
+                  </div>
+                  <span class="text-error">{{ form.state.errors }}</span>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-country">Country</label>
+                    {{ form.country }}
+                  </div>
+                  <span class="text-error">{{ form.country.errors }}</span>
                 </div>
               </div>
             </div>

@@ -4,13 +4,12 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
-from core.views_mixins import AjaxResponseMixin, JsonRequestResponseMixin
+from core.views_mixins import AjaxResponseMixin, JsonRequestResponseMixin, JSONResponseMixin
 # from braces.views import AjaxResponseMixin, JsonRequestResponseMixin
 from .models import Demand, Address, AddressDemand
-from .forms import DemandForm, DemandUpdateForm, DemandAddressesForm
 from .forms import AdressForm, DemandForm, DemandUpdateForm, DemandAddressesForm
 from core.models import Collector
 
@@ -96,10 +95,14 @@ class DemandUpdateView(BaseDetailDemand, UpdateView):
         demand = form.save(commit = True)
         return HttpResponseRedirect(reverse_lazy("demand_address", args=[demand.id]))
 
-# @method_decorator(login_required, name='dispatch')
-# class DemandDeleteView(BaseDetailCaptacao, DeleteView):
+@method_decorator(login_required, name='dispatch')
+class DemandDeleteView(JSONResponseMixin, AjaxResponseMixin, BaseDetailDemand, DeleteView):
 
-#     template_name = "captacoes/delete.html"
+    def delete_ajax(self, request, *args, **kwargs):
+        demand = self.get_object()
+        print(demand)
+        demand.delete()
+        return self.render_json_response({})
 
 @method_decorator(login_required, name='dispatch')
 class DemandUpdateStatusView(JsonRequestResponseMixin, AjaxResponseMixin, BaseDetailDemand,  UpdateView):
@@ -137,6 +140,7 @@ class DemandAddressesView(BaseDemand, UpdateView):
         AddressDemand.objects.filter(demand_id=demand_id).exclude(address__in=form.cleaned_data['addresses']).delete()
         return HttpResponseRedirect(self.success_url)
 
+
 @method_decorator(login_required, name='dispatch')
 class AdressCreateView(BaseAddress, CreateView):
     
@@ -148,4 +152,6 @@ class AdressCreateView(BaseAddress, CreateView):
         adress.collector = self.request.user.collector
         adress.save()
         return HttpResponseRedirect(reverse_lazy("list_demand"))
+
+
 

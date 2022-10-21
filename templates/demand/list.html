@@ -92,7 +92,6 @@
                       <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                         <a class="dropdown-item" href="{% url 'update_demand' demand.id %}">Edit</a>
                         <a class="dropdown-item status-demand" href="#" value="{{ demand.id }}" data-status="{{demand.status}}">{% if demand.status == 'o' %}Close{% else %}Open{% endif %} demand</a>
-                        <a class="dropdown-item text-danger" href="#">Delete</a>
                         <a class="dropdown-item delete-demand" href="#" value="{{ demand.id }}">Delete</a>
                       </div>
                     </div>
