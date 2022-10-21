@@ -25,7 +25,7 @@ def user_type_redirect(request: HttpRequest) -> HttpResponse:
             user = Discarder.objects.get(user = request.user)
             return HttpResponseRedirect(reverse_lazy(settings.LOGIN_REDIRECT_URL_DISCARD))
         except Discarder.DoesNotExist:
-            user = None        
+            return HttpResponseRedirect(reverse_lazy('login'))
 
 class UserAuthenticatedView():
 
