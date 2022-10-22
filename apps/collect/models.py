@@ -38,3 +38,6 @@ class AddressDemand(BaseModel, LogicDeletable):
 
   address = models.ForeignKey(Address, on_delete=models.CASCADE)
   demand = models.ForeignKey(Demand, on_delete=models.CASCADE)
+
+  class Meta:
+        unique_together = ['address', 'demand']

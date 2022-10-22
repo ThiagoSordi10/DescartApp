@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEBUG = False
+DEBUG = True
 env_type = os.getenv("ENV_TYPE")
 env = environ.Env()
 
@@ -169,6 +169,7 @@ if env_type == "prod":
     CSRF_COOKIE_SECURE = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
+    CSRF_TRUSTED_ORIGINS = ['*']
 
 
 ALLOWED_HOSTS = ['*']
