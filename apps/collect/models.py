@@ -40,4 +40,4 @@ class AddressDemand(BaseModel, LogicDeletable):
   demand = models.ForeignKey(Demand, on_delete=models.CASCADE)
 
   class Meta:
-        unique_together = ['address', 'demand']
+        unique_together = ('address', 'demand',)

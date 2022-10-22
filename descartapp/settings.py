@@ -169,7 +169,6 @@ if env_type == "prod":
     CSRF_COOKIE_SECURE = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
-    CSRF_TRUSTED_ORIGINS = ['*']
 
 
 ALLOWED_HOSTS = ['*']
