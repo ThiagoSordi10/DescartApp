@@ -18,10 +18,6 @@ class LoginForm(AuthenticationForm):
             }
         ))
 
-    def clean_password(self):
-        password = self.cleaned_data['password']
-        return password
-
 
 class SignUpForm(UserCreationForm):
 
@@ -64,17 +60,4 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = get_user_model()
         fields = ('name','phone', 'email', 'password1', 'password2')
-
-    def clean_email(self):
-        email = self.cleaned_data['email']
-        users = get_user_model().objects.filter(email__iexact=email)
-        if users:
-            raise forms.ValidationError("E-mail already exists.")
-        return email.lower()
-
-    def clean_phone(self):
-        phone = self.cleaned_data['phone']
-        users = get_user_model().objects.filter(phone__iexact=phone)
-        if users:
-            raise forms.ValidationError("Phone already exists.")
-        return phone
+        
