@@ -135,10 +135,10 @@ class DemandAddressesView(BaseDetailDemand, UpdateView):
         return kwargs
 
     def form_valid(self, form):
-        demand_id = self.kwargs.pop("pk")
+        demand = self.get_object()
         for address in form.cleaned_data['addresses']:
-            AddressDemand.objects.create(address=address, demand_id=demand_id)
-        AddressDemand.objects.filter(demand_id=demand_id).exclude(address__in=form.cleaned_data['addresses']).delete()
+            AddressDemand.objects.create(address=address, demand=demand)
+        AddressDemand.objects.filter(demand=demand).exclude(address__in=form.cleaned_data['addresses']).delete()
         return HttpResponseRedirect(self.success_url)
 
 
