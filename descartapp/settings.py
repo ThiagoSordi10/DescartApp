@@ -134,7 +134,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'pt-br'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'America/Sao_Paulo'
 
@@ -144,6 +144,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOGIN_URL = "login"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -178,3 +179,9 @@ MESSAGE_TAGS = {
 
 PROJECT_ROOT = os.path.dirname(__file__)
 sys.path.insert(0, os.path.join(PROJECT_ROOT, '../apps'))
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+LOGIN_REDIRECT_URL_COLLECTOR = 'list_demand'
+LOGIN_REDIRECT_URL_DISCARD = 'main_discard'
+

@@ -1,0 +1,108 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} {{ method }} Demand {% endblock title %}
+
+{% block content %}
+
+<div class="header pb-6 d-flex align-items-center" >
+  <!-- Mask -->
+  <span class="mask bg-gradient-default opacity-8" style="background: radial-gradient(circle, #395820 0, #1b2e0f 100%) !important"></span>
+  <!-- Header container -->
+  
+  <div class="container-fluid d-flex align-items-center">
+    <div class="row">
+      <div class="col-xl-12">
+        <br><br>
+        <h1 class="display-2 text-white"> 
+          Demand
+        </h1>
+        <p class="text-white mt-0 mb-5">Please fill the informations to {{ method|lower }} demand.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page content -->
+<div class="container-fluid mt--6" style="background: #9bbf7f !important;">
+  <div class="row">
+    <div class="col-xl-12 order-xl-1">
+      <div class="card">
+        <div class="card-header">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h3 class="mb-0">{{ method }} Demand </h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <form method="POST">
+          {% csrf_token %}
+            <h6 class="heading-small text-muted mb-4">Information</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-item">Item</label>
+                    {{ form.item }}
+                  </div>
+                  <span class="text-error">{{ form.item.errors }}</span>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-measure">Measure</label>
+                    {{ form.measure }}
+                  </div>
+                  <span class="text-error">{{ form.measure.errors }}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-unit_price">Unit price</label>
+                    {{ form.unit_price }}
+                  </div>
+                  <span class="text-error">{{ form.unit_price.errors }}</span>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-min_quantity">Minimum quantity</label>
+                    {{ form.min_quantity }}
+                  </div>
+                  <span class="text-error">{{ form.min_quantity.errors }}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-max_quantity">Maximum quantity</label>
+                    {{ form.max_quantity }}
+                  </div>
+                  <span class="text-error">{{ form.max_quantity.errors }}</span>
+                </div>
+                {% if form.status %}
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-max_quantity">Status</label>
+                    {{ form.status }}
+                  </div>
+                  <span class="text-error">{{ form.status.errors }}</span>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary mt-4">{{ method }} demand</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% include "includes/footer.html" %}
+
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}{% endblock javascripts %}

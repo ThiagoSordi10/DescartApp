@@ -26,13 +26,18 @@
       </div>
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-          {% comment %}<a href="{% url 'login' %}" class="nav-link">
+          <a href="{% url 'login' %}" class="nav-link">
             <span class="nav-link-inner--text">Login</span>
-          </a>{% endcomment %}
+          </a>
         </li>
         <li class="nav-item">
-          <a href="{% url 'signup' %}" class="nav-link">
-            <span class="nav-link-inner--text">Sign Up</span>
+          <a href="{% url 'signup_collector' %}" class="nav-link">
+            <span class="nav-link-inner--text">Collector - Sign Up</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'signup_discarder' %}" class="nav-link">
+            <span class="nav-link-inner--text">Discarder - Sign up</span>
           </a>
         </li>
       </ul>
