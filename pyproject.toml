@@ -20,4 +20,5 @@ google-cloud-secret-manager = "^2.12.5"
 django-storages = {extras = ["google"], version = "^1.13.1"}
 gunicorn = "^20.1.0"
 django-cors-headers = "^3.13.0"
+django-braces = "^1.15.0"
 [tool.poetry.dev-dependencies]

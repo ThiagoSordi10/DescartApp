@@ -2,7 +2,8 @@
 from symbol import import_as_name
 from django.conf import settings
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
+from django.contrib.auth import login as auth_login
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth.views import LoginView, LogoutView
@@ -10,7 +11,6 @@ from django.forms import BaseModelForm
 from django.http.response import HttpResponse
 from django.http.request import HttpRequest
 from django.http import HttpResponseRedirect
-from django.contrib.auth import login as auth_login
 from typing import Any, Dict
 from .forms import SignUpForm
 from .forms import LoginForm
@@ -25,16 +25,16 @@ def user_type_redirect(request: HttpRequest) -> HttpResponse:
             user = Discarder.objects.get(user = request.user)
             return HttpResponseRedirect(reverse_lazy(settings.LOGIN_REDIRECT_URL_DISCARD))
         except Discarder.DoesNotExist:
-            user = None        
+            return HttpResponseRedirect(reverse_lazy('login'))
 
 class UserAuthenticatedView():
 
     def get(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
         if not request.user.is_anonymous:
-            user_type_redirect(request)      
+            return user_type_redirect(request)      
         return super(UserAuthenticatedView, self).get(request, *args, **kwargs)
 
-class SignUpUserView(CreateView, UserAuthenticatedView):
+class SignUpUserView(UserAuthenticatedView, CreateView):
     form_class = SignUpForm
     template_name: str = 'user/signup.html'
 
@@ -60,7 +60,11 @@ class SignUpUserView(CreateView, UserAuthenticatedView):
         return user
 
     def form_invalid(self, form: BaseModelForm) -> HttpResponse:
-        self.request.session['msg'] = 'Form is invalid'
+        context = super().get_context_data()
+        context['msg'] = 'Form is invalid'
+        context['form'] = form
+        context['form']._errors = form.errors
+        return self.render_to_response(context)
 
 class SignUpUserCollectorView(SignUpUserView):
 
@@ -68,6 +72,7 @@ class SignUpUserCollectorView(SignUpUserView):
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super(SignUpUserCollectorView, self).get_context_data(**kwargs)
         context['user_type'] = 'Collector'
+        return context
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         user = super(SignUpUserCollectorView, self).form_valid(form)
@@ -76,15 +81,15 @@ class SignUpUserCollectorView(SignUpUserView):
         return HttpResponseRedirect(reverse_lazy('signup_collector'))
 
     def form_invalid(self, form:BaseModelForm) -> HttpResponse:
-        super(SignUpUserCollectorView, self).form_invalid(form)
-        return HttpResponseRedirect(reverse_lazy('signup_collector'))
-
+        return super(SignUpUserCollectorView, self).form_invalid(form)
+        
 
 class SignUpUserDiscardView(SignUpUserView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super(SignUpUserDiscardView, self).get_context_data(**kwargs)
         context['user_type'] = 'Discarder'
+        return context
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         user = super(SignUpUserDiscardView, self).form_valid(form)
@@ -93,11 +98,10 @@ class SignUpUserDiscardView(SignUpUserView):
         return HttpResponseRedirect(reverse_lazy('signup_discarder'))
 
     def form_invalid(self, form: BaseModelForm) -> HttpResponse:
-        super(SignUpUserDiscardView, self).form_invalid(form)
-        return HttpResponseRedirect(reverse_lazy('signup_discarder'))
+        return super(SignUpUserDiscardView, self).form_invalid(form)
 
 
-class LoginUserView(LoginView, UserAuthenticatedView):
+class LoginUserView(UserAuthenticatedView, LoginView):
     form_class = LoginForm
     template_name: str = 'user/login.html'
 
@@ -107,7 +111,18 @@ class LoginUserView(LoginView, UserAuthenticatedView):
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         """Login"""
         auth_login(self.request, form.get_user())
-        user_type_redirect(self.request)      
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return HttpResponseRedirect(next_url)
+        return user_type_redirect(self.request)
+
+    def form_invalid(self, form: BaseModelForm) -> HttpResponse:
+        context = super().get_context_data()
+        context['msg'] = 'Form is invalid'
+        context['form'] = form
+        context['form']._errors = form.non_field_errors()
+        return self.render_to_response(context)
+    
 
 class LogoutUserView(LogoutView):
     next_page: Any = reverse_lazy('login')
