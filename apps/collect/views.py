@@ -13,11 +13,7 @@ from .models import Demand, Address, AddressDemand
 from .forms import AdressForm, DemandForm, DemandUpdateForm, DemandAddressesForm
 from core.models import Collector
 
-class BaseDemand():
-
-    context_object_name = "demand"
-    model = Demand
-    success_url = reverse_lazy("list_demand")
+class Authorize():
 
     def dispatch(self, request, *args, **kwargs):
         handler = super().dispatch(request, *args, **kwargs)
@@ -27,8 +23,14 @@ class BaseDemand():
         except Collector.DoesNotExist:
             raise PermissionDenied
 
+class BaseDemand(Authorize):
 
-class BaseAddress():
+    context_object_name = "demand"
+    model = Demand
+    success_url = reverse_lazy("list_demand")
+
+    
+class BaseAddress(Authorize):
 
     context_object_name = "address"
     model = Address
@@ -121,7 +123,7 @@ class DemandUpdateStatusView(JsonRequestResponseMixin, AjaxResponseMixin, BaseDe
 
 
 @method_decorator(login_required, name='dispatch')
-class DemandAddressesView(BaseDemand, UpdateView):
+class DemandAddressesView(BaseDetailDemand, UpdateView):
 
     form_class = DemandAddressesForm
     template_name = "demand/demand_address.html"
