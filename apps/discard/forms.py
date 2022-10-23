@@ -6,6 +6,13 @@ from collect.models import Address, AddressDemand
 
 class OrderForm(forms.ModelForm):
 
+    address_demand_choices= None
+    address_demand = forms.ModelChoiceField(label='Address of demand', queryset=address_demand_choices, widget=forms.Select(
+            attrs={
+                "placeholder": "Address of demand",
+                "class": "form-control"
+            }
+        ))
     quantity = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -13,17 +20,17 @@ class OrderForm(forms.ModelForm):
                 "class": "form-control"
             }
         ))
-    total_price = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                "placeholder": "Total price",
-                "class": "form-control"
-            }
-        ))
     
     class Meta:
         model = Order
-        fields = ("total_price", "quantity", )
+        fields = ("quantity", "address_demand", )
+
+    def __init__(self, *args, **kwargs):
+        id = kwargs.pop('demand_id', None)
+        super(OrderForm, self).__init__(*args, **kwargs)
+        self.address_demand_choices= AddressDemand.objects.filter(demand_id = id)
+        self.fields['address_demand'].queryset = self.address_demand_choices
+
 
 class OrderUpdateForm(OrderForm):
 

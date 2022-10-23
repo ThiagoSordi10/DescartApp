@@ -55,11 +55,17 @@ class OrderCreateView(BaseOrder, CreateView):
         "method": "Create"
     }
 
+    def get_form_kwargs(self):
+        kwargs = super(OrderCreateView, self).get_form_kwargs()
+        kwargs.update(self.kwargs)
+        return kwargs
+
     def form_valid(self, form):
         order = form.save(commit = False)
         order.discarder = self.request.user.discarder
+        order.total_price = order.quantity * order.address_demand.demand.unit_price
         order.save()
-        return HttpResponseRedirect(reverse_lazy("demand_address", args=[order.id]))
+        return HttpResponseRedirect(self.success_url)
 
 @method_decorator(login_required, name='dispatch')
 class OrderListView(BaseOrder, ListView):

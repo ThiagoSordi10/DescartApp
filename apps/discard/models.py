@@ -18,4 +18,4 @@ class Order(BaseModel, LogicDeletable):
   status = models.CharField(max_length=1, choices=STATUS_CHOICES, blank=False, null=False, default="p")
 
   def __str__(self):
-      return self.quantity
+      return str(self.id)

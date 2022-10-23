@@ -39,7 +39,13 @@
             <h6 class="heading-small text-muted mb-4">Information</h6>
             <div class="pl-lg-4">
               <div class="row">
-
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input-quantity">Select address of demand</label>
+                    {{ form.address_demand }}
+                  </div>
+                  <span class="text-error">{{ form.address_demand.errors }}</span>
+                </div>
                 <div class="col-lg-6">
                   <div class="form-group">
                     <label class="form-control-label" for="input-quantity">Minimum quantity</label>
