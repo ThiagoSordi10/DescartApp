@@ -4,18 +4,16 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
+from core.views_mixins import AjaxResponseMixin, JsonRequestResponseMixin, JSONResponseMixin
+# from braces.views import AjaxResponseMixin, JsonRequestResponseMixin
 from .models import Demand, Address, AddressDemand
-from .forms import DemandForm, DemandUpdateForm, DemandAddressesForm
+from .forms import AdressForm, DemandForm, DemandUpdateForm, DemandAddressesForm
 from core.models import Collector
 
-class BaseDemand():
-
-    context_object_name = "demand"
-    model = Demand
-    success_url = reverse_lazy("list_demand")
+class Authorize():
 
     def dispatch(self, request, *args, **kwargs):
         handler = super().dispatch(request, *args, **kwargs)
@@ -25,8 +23,14 @@ class BaseDemand():
         except Collector.DoesNotExist:
             raise PermissionDenied
 
+class BaseDemand(Authorize):
 
-class BaseAddress():
+    context_object_name = "demand"
+    model = Demand
+    success_url = reverse_lazy("list_demand")
+
+    
+class BaseAddress(Authorize):
 
     context_object_name = "address"
     model = Address
@@ -37,12 +41,11 @@ class BaseDetailDemand(BaseDemand):
 
     def dispatch(self, request, *args, **kwargs):
         try:
-            super(BaseDetailDemand, self).dispatch(request, *args, **kwargs)
+            handler = super(BaseDetailDemand, self).dispatch(request, *args, **kwargs)
             self.object = self.get_object()
             if self.object.collector != request.user.collector:
                 raise PermissionDenied
-            context = self.get_context_data(object=self.object)
-            return self.render_to_response(context)
+            return handler
         except PermissionDenied:
             raise PermissionDenied
 
@@ -94,13 +97,33 @@ class DemandUpdateView(BaseDetailDemand, UpdateView):
         demand = form.save(commit = True)
         return HttpResponseRedirect(reverse_lazy("demand_address", args=[demand.id]))
 
-# @method_decorator(login_required, name='dispatch')
-# class DemandDeleteView(BaseDetailCaptacao, DeleteView):
+@method_decorator(login_required, name='dispatch')
+class DemandDeleteView(JSONResponseMixin, AjaxResponseMixin, BaseDetailDemand, DeleteView):
 
-#     template_name = "captacoes/delete.html"
+    def delete_ajax(self, request, *args, **kwargs):
+        demand = self.get_object()
+        demand.logic_delete(request.user)
+        return self.render_json_response({})
 
 @method_decorator(login_required, name='dispatch')
-class DemandAddressesView(BaseDemand, UpdateView):
+class DemandUpdateStatusView(JsonRequestResponseMixin, AjaxResponseMixin, BaseDetailDemand,  UpdateView):
+
+    require_json = True
+
+    def put_ajax(self, request, *args, **kwargs):
+        try:
+            status = self.request_json[u"status"]
+        except KeyError:
+            error_dict = {"message": "your order must include a status"}
+            return self.render_bad_request_response(error_dict)
+        demand = self.get_object()
+        demand.status = status
+        demand.save()
+        return self.render_json_response({})
+
+
+@method_decorator(login_required, name='dispatch')
+class DemandAddressesView(BaseDetailDemand, UpdateView):
 
     form_class = DemandAddressesForm
     template_name = "demand/demand_address.html"
@@ -112,8 +135,24 @@ class DemandAddressesView(BaseDemand, UpdateView):
         return kwargs
 
     def form_valid(self, form):
-        demand_id = self.kwargs.pop("pk")
+        demand = self.get_object()
         for address in form.cleaned_data['addresses']:
-            AddressDemand.objects.create(address=address, demand_id=demand_id)
-        AddressDemand.objects.filter(demand_id=demand_id).exclude(address__in=form.cleaned_data['addresses']).delete()
+            AddressDemand.objects.get_or_create(address=address, demand=demand)
+        AddressDemand.objects.filter(demand=demand).exclude(address__in=form.cleaned_data['addresses']).delete()
         return HttpResponseRedirect(self.success_url)
+
+
+@method_decorator(login_required, name='dispatch')
+class AdressCreateView(BaseAddress, CreateView):
+    
+    form_class = AdressForm
+    template_name = "address/new.html"
+
+    def form_valid(self, form):
+        adress = form.save(commit = False)
+        adress.collector = self.request.user.collector
+        adress.save()
+        return HttpResponseRedirect(reverse_lazy("list_demand"))
+
+
+

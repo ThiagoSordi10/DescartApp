@@ -94,3 +94,67 @@ class DemandAddressesForm(forms.ModelForm):
         self.fields['addresses'].initial = [a.address.id for a in AddressDemand.objects.filter(demand_id=id)]
         self.fields['demand'].initial = Demand.objects.get(pk=id)
         self.fields['demand'].required = False
+
+
+class AdressForm(forms.ModelForm):
+
+    street = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Street",
+                "class": "form-control"
+            }
+        ))  
+    district = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "District",
+                "class": "form-control"
+            }
+        ))
+    number = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Number",
+                "class": "form-control"
+            }
+        ))
+    complement = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Complement",
+                "class": "form-control"
+            }
+        ))
+    zip_code = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Zip Code",
+                "class": "form-control"
+            }
+        ))
+    city = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "City",
+                "class": "form-control"
+            }
+        ))
+    state = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "State",
+                "class": "form-control"
+            }
+        ))
+    country = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Country",
+                "class": "form-control"
+            }
+        ))
+    
+    class Meta:
+        model = Address
+        fields = ("street", "district", "number", "complement", "zip_code", "city", "state", "country")

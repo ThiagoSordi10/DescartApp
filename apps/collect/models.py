@@ -7,7 +7,6 @@ class Demand(BaseModel, LogicDeletable):
   STATUS_CHOICES = (
         ("o", "Open"),
         ("c", "Closed"),
-        ("p", "Paused")
     )
 
   unit_price = models.DecimalField(max_digits=10, decimal_places=4)
@@ -39,3 +38,6 @@ class AddressDemand(BaseModel, LogicDeletable):
 
   address = models.ForeignKey(Address, on_delete=models.CASCADE)
   demand = models.ForeignKey(Demand, on_delete=models.CASCADE)
+
+  class Meta:
+        unique_together = ('address', 'demand',)

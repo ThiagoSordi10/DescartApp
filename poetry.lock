@@ -66,6 +66,17 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-braces"
+version = "1.15.0"
+description = "Reusable, generic mixins for Django"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+Django = ">=2.2"
+
+[[package]]
 name = "django-cors-headers"
 version = "3.13.0"
 description = "django-cors-headers is a Django application for handling the server headers required for Cross-Origin Resource Sharing (CORS)."
@@ -460,7 +471,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "91c3e45cead50aef18fdae54c1da854bc52e5a3a67081a8370bce58f71220046"
+content-hash = "66bf49456d4ed1d0298231bb668527217a1977bd26daeb936df698b99e265236"
 
 [metadata.files]
 asgiref = []
@@ -469,6 +480,7 @@ cachetools = []
 certifi = []
 charset-normalizer = []
 django = []
+django-braces = []
 django-cors-headers = []
 django-crispy-forms = []
 django-environ = []

@@ -2,7 +2,8 @@
 from symbol import import_as_name
 from django.conf import settings
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
+from django.contrib.auth import login as auth_login
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth.views import LoginView, LogoutView
@@ -10,7 +11,6 @@ from django.forms import BaseModelForm
 from django.http.response import HttpResponse
 from django.http.request import HttpRequest
 from django.http import HttpResponseRedirect
-from django.contrib.auth import login as auth_login
 from typing import Any, Dict
 from .forms import SignUpForm
 from .forms import LoginForm
@@ -25,7 +25,7 @@ def user_type_redirect(request: HttpRequest) -> HttpResponse:
             user = Discarder.objects.get(user = request.user)
             return HttpResponseRedirect(reverse_lazy(settings.LOGIN_REDIRECT_URL_DISCARD))
         except Discarder.DoesNotExist:
-            user = None        
+            return HttpResponseRedirect(reverse_lazy('login'))
 
 class UserAuthenticatedView():
 
@@ -60,7 +60,11 @@ class SignUpUserView(UserAuthenticatedView, CreateView):
         return user
 
     def form_invalid(self, form: BaseModelForm) -> HttpResponse:
-        self.request.session['msg'] = 'Form is invalid'
+        context = super().get_context_data()
+        context['msg'] = 'Form is invalid'
+        context['form'] = form
+        context['form']._errors = form.errors
+        return self.render_to_response(context)
 
 class SignUpUserCollectorView(SignUpUserView):
 
@@ -77,9 +81,8 @@ class SignUpUserCollectorView(SignUpUserView):
         return HttpResponseRedirect(reverse_lazy('signup_collector'))
 
     def form_invalid(self, form:BaseModelForm) -> HttpResponse:
-        super(SignUpUserCollectorView, self).form_invalid(form)
-        return HttpResponseRedirect(reverse_lazy('signup_collector'))
-
+        return super(SignUpUserCollectorView, self).form_invalid(form)
+        
 
 class SignUpUserDiscardView(SignUpUserView):
 
@@ -95,8 +98,7 @@ class SignUpUserDiscardView(SignUpUserView):
         return HttpResponseRedirect(reverse_lazy('signup_discarder'))
 
     def form_invalid(self, form: BaseModelForm) -> HttpResponse:
-        super(SignUpUserDiscardView, self).form_invalid(form)
-        return HttpResponseRedirect(reverse_lazy('signup_discarder'))
+        return super(SignUpUserDiscardView, self).form_invalid(form)
 
 
 class LoginUserView(UserAuthenticatedView, LoginView):
@@ -112,7 +114,15 @@ class LoginUserView(UserAuthenticatedView, LoginView):
         next_url = self.request.GET.get('next')
         if next_url:
             return HttpResponseRedirect(next_url)
-        return user_type_redirect(self.request)      
+        return user_type_redirect(self.request)
+
+    def form_invalid(self, form: BaseModelForm) -> HttpResponse:
+        context = super().get_context_data()
+        context['msg'] = 'Form is invalid'
+        context['form'] = form
+        context['form']._errors = form.non_field_errors()
+        return self.render_to_response(context)
+    
 
 class LogoutUserView(LogoutView):
     next_page: Any = reverse_lazy('login')
