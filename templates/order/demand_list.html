@@ -38,20 +38,17 @@
           <br>
           <!-- Light table -->
           <div class="table-responsive">
-            <table class="table align-items-center table-flush">
+            <table class="table table-hover align-items-center table-flush">
               <thead class="thead-light">
                 <tr>
                   <th scope="col" class="sort" data-sort="name">Item name</th>
-                  <th scope="col" class="sort" data-sort="budget">Budget</th>
-                  <th scope="col" class="sort" data-sort="status">Status</th>
-                  <th scope="col">Users</th>
+                  <th scope="col" class="sort" data-sort="budget">Measure unit</th>
                   <th scope="col" class="sort" data-sort="completion">Unit price</th>
-                  <th scope="col"></th>
                 </tr>
               </thead>
               <tbody class="list">
                 {% for demand in demands_list %}
-                <tr>
+                <tr class="tr-demand" data-href="{% url 'create_order' demand.id%}">
                   <th scope="row">
                     <div class="media align-items-center">
                       <div class="media-body">
@@ -59,44 +56,13 @@
                       </div>
                     </div>
                   </th>
-                  <td class="budget">
-                    R$ 2500,00
-                  </td>
                   <td>
                     <span class="badge badge-dot mr-4">
-                      <span class="status">{{ demand.get_status_display }}</span>
+                      <span class="status">{{ demand.measure }}</span>
                     </span>
                   </td>
                   <td>
-                    <div class="avatar-group">
-                      <a href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip" data-original-title="Ryan Tompson">
-                        <img alt="Image placeholder" src="/static/assets/img/theme/team-1.jpg">
-                      </a>
-                      <a href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip" data-original-title="Romina Hadid">
-                        <img alt="Image placeholder" src="/static/assets/img/theme/team-2.jpg">
-                      </a>
-                      <a href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip" data-original-title="Alexander Smith">
-                        <img alt="Image placeholder" src="/static/assets/img/theme/team-3.jpg">
-                      </a>
-                      <a href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip" data-original-title="Jessica Doe">
-                        <img alt="Image placeholder" src="/static/assets/img/theme/team-4.jpg">
-                      </a>
-                    </div>
-                  </td>
-                  <td>
                     R$ {{ demand.unit_price|floatformat:2 }}
-                  </td>
-                  <td class="text-right">
-                    <div class="dropdown">
-                      <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-ellipsis-v"></i>
-                      </a>
-                      <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                        <a class="dropdown-item" href="#">Edit</a>
-                        <a class="dropdown-item" href="#">Pause demand</a>
-                        <a class="dropdown-item text-danger" href="#">Delete</a>
-                      </div>
-                    </div>
                   </td>
                 </tr>
                 {% endfor %}
@@ -146,4 +112,10 @@
 {% endblock content %}
 
 <!-- Specific JS goes HERE --> 
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+<script>
+   $(".tr-demand").click(function(){
+    window.location = $(this).attr("data-href");
+  });
+</script>
+{% endblock javascripts %}
