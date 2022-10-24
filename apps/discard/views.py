@@ -5,6 +5,7 @@ from django.utils.decorators import method_decorator
 from django.core.exceptions import PermissionDenied
 from django.views.generic import CreateView, ListView, UpdateView
 from django.http import HttpResponseRedirect
+from django.db.models import Q
 
 from django.core.paginator import Paginator
 
@@ -90,11 +91,14 @@ class DiscardDemandsListView(BaseOrder, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        demands = Demand.objects.filter(addressdemand__address__city= 'Santa Maria').distinct()
+        city = self.request.GET.get('city', None)
+        filter_city = Q(addressdemand__address__city__icontains=city.lower()) if city else Q()
+        demands = Demand.objects.filter(filter_city).distinct()
 
         paginator = Paginator(demands, 6)
         page = self.request.GET.get('page')
         demands_page = paginator.get_page(page)
 
         context['demands_list'] = demands_page
+        context['city'] = city
         return context

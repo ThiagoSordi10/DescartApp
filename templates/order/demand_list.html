@@ -31,9 +31,23 @@
       <div class="col">
         <div class="card">
           <br>
-          <div class="text-right" style="margin-right: 5%;">
-            <a href="#" class="btn btn-sm btn-neutral">New</a>
-            <a href="#" class="btn btn-sm btn-neutral">Filters</a>
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group mb-0" style="margin-left: 5%;">
+                <div class="input-group input-group-alternative input-group-merge">
+                  <input class="form-control" id="input-city" placeholder="Filter by city..." type="text" {% if city %}value="{{city}}"{% endif %}>
+                </div>
+              </div>
+            </div>
+            <div class="col-2" style="margin-left: -2%;">
+              <button type="submit" class="btn btn-sm btn-neutral" id="submit-city"><i class="fa fa-search"></i></button>
+            </div>
+            <div class="col-6">
+              <div class="text-right" style="margin-right: 5%;">
+                <a href="#" class="btn btn-sm btn-neutral">New</a>
+                <a href="#" class="btn btn-sm btn-neutral">Filters</a>
+              </div>
+            </div>
           </div>
           <br>
           <!-- Light table -->
@@ -114,6 +128,18 @@
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
 <script>
+
+    $("#input-city").keyup(function(event) {
+        if (event.keyCode === 13) {
+            $("#submit-city").click();
+        }
+    });
+
+    $("#submit-city").click(function() {
+      var baseUrl = window.location.href.split("?")[0]
+      window.location = baseUrl + "?city="+$("#input-city").val();
+    });
+
    $(".tr-demand").click(function(){
     window.location = $(this).attr("data-href")+"?city=Santa Maria";
   });
