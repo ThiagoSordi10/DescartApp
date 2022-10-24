@@ -8,7 +8,8 @@ class Order(BaseModel, LogicDeletable):
   STATUS_CHOICES = (
         ("a", "Accepted"),
         ("r", "Refused"),
-        ("p", "Pending")
+        ("p", "Pending"),
+        ("f", "Finished")
     )
 
   total_price = models.DecimalField(max_digits=10, decimal_places=4)

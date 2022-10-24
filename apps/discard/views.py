@@ -27,11 +27,6 @@ class BaseOrder():
         except Discarder.DoesNotExist:
             raise PermissionDenied
 
-class BaseAddress():
-
-    context_object_name = "address"
-    model = Address
-    success_url = reverse_lazy("list_order")
 
 class BaseDetailOrder(BaseOrder):
 
@@ -58,6 +53,7 @@ class OrderCreateView(BaseOrder, CreateView):
     def get_form_kwargs(self):
         kwargs = super(OrderCreateView, self).get_form_kwargs()
         kwargs.update(self.kwargs)
+        kwargs['city'] = self.request.GET.get('city')
         return kwargs
 
     def form_valid(self, form):
@@ -84,18 +80,6 @@ class OrderListView(BaseOrder, ListView):
         context['order_list'] = orders_page
         return context
 
-@method_decorator(login_required, name='dispatch')
-class OrderUpdateView(BaseDetailOrder, UpdateView):
-
-    form_class = OrderUpdateForm
-    template_name = "order/form.html"
-    extra_context = {
-        "method": "Update"
-    }
-
-    def form_valid(self, form):
-        order = form.save(commit = True)
-        return HttpResponseRedirect(reverse_lazy("demand_address", args=[order.id]))
 
 @method_decorator(login_required, name='dispatch')
 class DiscardDemandsListView(BaseOrder, ListView):

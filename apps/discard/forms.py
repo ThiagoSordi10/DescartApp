@@ -27,8 +27,9 @@ class OrderForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         id = kwargs.pop('demand_id', None)
+        city = kwargs.pop('city', None)
         super(OrderForm, self).__init__(*args, **kwargs)
-        self.address_demand_choices= AddressDemand.objects.filter(demand_id = id)
+        self.address_demand_choices= AddressDemand.objects.filter(demand_id = id, address__city=city)
         self.fields['address_demand'].queryset = self.address_demand_choices
 
 
