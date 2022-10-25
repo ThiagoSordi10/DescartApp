@@ -16,33 +16,33 @@
           {% if user.discarder %}
           <li class="nav-item">
             <a class="nav-link {% if 'index' in segment %} active {% endif %}" href="{% url 'list_order' %}">
-              <i class="ni ni-tv-2 text-primary"></i>
+              <i class="ni ni-bullet-list-67 text-default"></i>
               <span class="nav-link-text">Your orders</span>
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link {% if 'icons' in segment %} active {% endif %}" href="{% url 'order_list_demand' %}">
-              <i class="ni ni-planet text-orange"></i>
+              <i style="margin-left: -2.5%; margin-right: 2%; font-size: 25px"  class="ni ni-fat-add text-default"></i>
               <span class="nav-link-text">Create order</span>
             </a>
           </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link {% if 'map' in segment %} active {% endif %}" href="/map.html">
-              <i class="ni ni-pin-3 text-primary"></i>
-              <span class="nav-link-text">Google</span>
+          {% elif user.collector %}
+          <li class="nav-item">
+            <a class="nav-link {% if 'tables' in segment %} active {% endif %}" href="{% url 'create_demand' %}">
+              <i style="margin-left: -2.5%; margin-right: 2%; font-size: 25px"  class="ni ni-fat-add text-default"></i>
+              <span class="nav-link-text">Create Demand</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {% if 'profile' in segment %} active {% endif %}" href="/profile.html">
-              <i class="ni ni-single-02 text-yellow"></i>
-              <span class="nav-link-text">Profile</span>
-            </a>
-          </li> -->
-          {% elif user.collector %}
-          <li class="nav-item">
-            <a class="nav-link {% if 'tables' in segment %} active {% endif %}" href="/tables.html">
+            <a class="nav-link {% if 'tables' in segment %} active {% endif %}" href="{% url 'list_demand' %}">
               <i class="ni ni-bullet-list-67 text-default"></i>
-              <span class="nav-link-text">Tables</span>
+              <span class="nav-link-text">List Demand</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'tables' in segment %} active {% endif %}" href="{% url 'create_adress' %}">
+              <i class="ni ni-pin-3 text-default"></i>
+              <span class="nav-link-text">Create Address</span>
             </a>
           </li>
           {% endif %}         
@@ -60,34 +60,7 @@
               <i class="ni ni-user-run text-red"></i>
               <span class="nav-link-text">Logout</span>
             </a>
-          </li>   
-
-          <!-- <li class="nav-item">
-            <a class="nav-link" 
-               target="_blank" 
-               href="https://appseed.us/admin-dashboards/django-dashboard-argon">
-              <i class="ni ni-archive-2"></i>
-              <span class="nav-link-text">Product Page</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" 
-               target="_blank" 
-               href="https://appseed.us/admin-dashboards/django-dashboard-argon-pro">
-              <i class="ni ni-spaceship text-red"></i>
-              <span class="nav-link-text text-red">PRO Version</span>
-            </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link active active-pro" 
-               target="_blank" 
-               href="http://appseed.us">
-              <i class="ni ni-send text-dark"></i>
-              <span class="nav-link-text">AppSeed</span>
-            </a>
-           </li> -->
+          </li>  
         </ul>
       </div>
     </div>
