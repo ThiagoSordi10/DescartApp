@@ -197,16 +197,16 @@ class OrderUpdateStatusView(JsonRequestResponseMixin, AjaxResponseMixin, BaseDet
     def put_ajax(self, request, *args, **kwargs):
         try:
             status = self.request_json[u"status"]
+            if status in [c[0] for c in Order.status.field.choices]:
+                order = self.get_object()
+                order.status = status
+                order.save()
+                return self.render_json_response({})
+            error_dict = {"message": "status not valid"}
+            return self.render_bad_request_response(error_dict)
         except KeyError:
             error_dict = {"message": "your order must include a status"}
             return self.render_bad_request_response(error_dict)
-        if status in [c[0] for c in Order.status.field.choices]:
-            order = self.get_object()
-            order.status = status
-            order.save()
-            return self.render_json_response({})
-        error_dict = {"message": "status not valid"}
-        return self.render_bad_request_response(error_dict)
 
 
 
