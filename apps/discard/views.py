@@ -85,7 +85,6 @@ class OrderListView(BaseOrder, ListView):
 @method_decorator(login_required, name='dispatch')
 class DiscardDemandsListView(BaseOrder, ListView):
 
-    context_object_name = "demands"
     model = Demand
     template_name = "order/demand_list.html"    
 
