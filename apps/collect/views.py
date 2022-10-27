@@ -4,9 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
-from django.views.generic import CreateView, ListView, UpdateView, DeleteView
+from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
+from django.db.models import Q
 from core.views_mixins import AjaxResponseMixin, JsonRequestResponseMixin, JSONResponseMixin
 # from braces.views import AjaxResponseMixin, JsonRequestResponseMixin
 from .models import Demand, Address, AddressDemand
@@ -50,20 +51,6 @@ class BaseDetailDemand(BaseDemand):
         except PermissionDenied:
             raise PermissionDenied
 
-class BaseDetailOrder(Authorize):
-
-    model = Order
-
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            handler = super(BaseDetailOrder, self).dispatch(request, *args, **kwargs)
-            self.object = self.get_object()
-            if self.object.address_demand.demand.collector != request.user.collector:
-                raise PermissionDenied
-            return handler
-        except PermissionDenied:
-            raise PermissionDenied
-
 
 @method_decorator(login_required, name='dispatch')
 class DemandCreateView(BaseDemand, CreateView):
@@ -90,6 +77,9 @@ class DemandListView(BaseDemand, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         demands = Demand.objects.filter(collector=self.request.user.collector).distinct()
+
+        for demand in demands:
+            demand.pending_orders = Order.objects.filter(address_demand__demand = demand, status='p').count()
 
         paginator = Paginator(demands, 6)
         page = self.request.GET.get('page')
@@ -173,7 +163,7 @@ class AdressCreateView(BaseAddress, CreateView):
 class CollectOrdersListView(BaseDetailDemand, DetailView):
 
     model = Demand
-    template_name = "order/demand_list.html"    
+    template_name = "demand/order_list.html"    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -187,26 +177,6 @@ class CollectOrdersListView(BaseDetailDemand, DetailView):
         orders_page = paginator.get_page(page)
 
         context['orders_list'] = orders_page
+        context['status'] = status
+        print(context['status'])
         return context
-
-@method_decorator(login_required, name='dispatch')
-class OrderUpdateStatusView(JsonRequestResponseMixin, AjaxResponseMixin, BaseDetailOrder,  UpdateView):
-
-    require_json = True
-
-    def put_ajax(self, request, *args, **kwargs):
-        try:
-            status = self.request_json[u"status"]
-            if status in [c[0] for c in Order.status.field.choices]:
-                order = self.get_object()
-                order.status = status
-                order.save()
-                return self.render_json_response({})
-            error_dict = {"message": "status not valid"}
-            return self.render_bad_request_response(error_dict)
-        except KeyError:
-            error_dict = {"message": "your order must include a status"}
-            return self.render_bad_request_response(error_dict)
-
-
-

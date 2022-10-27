@@ -42,7 +42,7 @@
                   <th scope="col" class="sort" data-sort="name">Item name</th>
                   <th scope="col" class="sort" data-sort="budget">Budget</th>
                   <th scope="col" class="sort" data-sort="status">Status</th>
-                  <th scope="col">Users</th>
+                  <th scope="col" class="sort" data-sort="orders">Orders</th>
                   <th scope="col" class="sort" data-sort="completion">Unit price</th>
                   <th scope="col"></th>
                 </tr>
@@ -66,7 +66,7 @@
                     </span>
                   </td>
                   <td>
-                    <div class="avatar-group">
+                    <!-- <div class="avatar-group">
                       <a href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip" data-original-title="Ryan Tompson">
                         <img alt="Image placeholder" src="/static/assets/img/theme/team-1.jpg">
                       </a>
@@ -79,7 +79,8 @@
                       <a href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip" data-original-title="Jessica Doe">
                         <img alt="Image placeholder" src="/static/assets/img/theme/team-4.jpg">
                       </a>
-                    </div>
+                    </div> -->
+                    {% if demand.pending_orders == 0 %} Show {% else %} {{ demand.pending_orders }} {% endif %}
                   </td>
                   <td>
                     R$ {{ demand.unit_price|floatformat:2 }}
