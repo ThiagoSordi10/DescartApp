@@ -178,5 +178,4 @@ class CollectOrdersListView(BaseDetailDemand, DetailView):
 
         context['orders_list'] = orders_page
         context['status'] = status
-        print(context['status'])
         return context

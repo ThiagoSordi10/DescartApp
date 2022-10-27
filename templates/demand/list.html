@@ -80,7 +80,9 @@
                         <img alt="Image placeholder" src="/static/assets/img/theme/team-4.jpg">
                       </a>
                     </div> -->
-                    {% if demand.pending_orders == 0 %} Show {% else %} {{ demand.pending_orders }} {% endif %}
+                    {% if demand.pending_orders == 0 %} <a href="{% url 'demand_list_orders' demand.id %}">Show</a>
+                    {% else %} <a class="text-red" href="{% url 'demand_list_orders' demand.id %}">{{ demand.pending_orders }} Pending</a>
+                    {% endif %}
                   </td>
                   <td>
                     R$ {{ demand.unit_price|floatformat:2 }}
