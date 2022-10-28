@@ -32,12 +32,15 @@ class Address(BaseModel, LogicDeletable):
     collector = models.ForeignKey(Collector, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.street
+        return f"{self.street}, {self.number} - {self.district}, {self.city}/{self.state}"
 
 class AddressDemand(BaseModel, LogicDeletable):
 
   address = models.ForeignKey(Address, on_delete=models.CASCADE)
   demand = models.ForeignKey(Demand, on_delete=models.CASCADE)
+
+  def __str__(self):
+        return str(self.address)
 
   class Meta:
         unique_together = ('address', 'demand',)

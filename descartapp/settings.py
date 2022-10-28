@@ -189,5 +189,5 @@ sys.path.insert(0, os.path.join(PROJECT_ROOT, '../apps'))
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 LOGIN_REDIRECT_URL_COLLECTOR = 'list_demand'
-LOGIN_REDIRECT_URL_DISCARD = 'main_discard'
+LOGIN_REDIRECT_URL_DISCARD = 'list_order'
 

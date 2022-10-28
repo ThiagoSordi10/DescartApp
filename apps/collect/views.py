@@ -4,14 +4,16 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
-from django.views.generic import CreateView, ListView, UpdateView, DeleteView
+from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
+from django.db.models import Q, Sum
 from core.views_mixins import AjaxResponseMixin, JsonRequestResponseMixin, JSONResponseMixin
 # from braces.views import AjaxResponseMixin, JsonRequestResponseMixin
 from .models import Demand, Address, AddressDemand
 from .forms import AdressForm, DemandForm, DemandUpdateForm, DemandAddressesForm
 from core.models import Collector
+from discard.models import Order
 
 class Authorize():
 
@@ -75,6 +77,10 @@ class DemandListView(BaseDemand, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         demands = Demand.objects.filter(collector=self.request.user.collector).distinct()
+
+        for demand in demands:
+            demand.pending_orders = Order.objects.filter(address_demand__demand = demand, status='p').count()
+            demand.value_bought = Order.objects.filter(address_demand__demand = demand, status='f').aggregate(Sum('total_price'))['total_price__sum']
 
         paginator = Paginator(demands, 6)
         page = self.request.GET.get('page')
@@ -154,5 +160,23 @@ class AdressCreateView(BaseAddress, CreateView):
         adress.save()
         return HttpResponseRedirect(reverse_lazy("list_demand"))
 
+@method_decorator(login_required, name='dispatch')
+class CollectOrdersListView(BaseDetailDemand, DetailView):
 
+    model = Demand
+    template_name = "demand/order_list.html"    
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        status = self.request.GET.get('status', 'p')
+        filter_status = Q(status=status)
+        demand = self.get_object()
+        orders = Order.objects.filter(filter_status, address_demand__demand=demand).distinct()
+
+        paginator = Paginator(orders, 6)
+        page = self.request.GET.get('page')
+        orders_page = paginator.get_page(page)
+
+        context['orders_list'] = orders_page
+        context['status'] = status
+        return context

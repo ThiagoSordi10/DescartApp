@@ -42,7 +42,7 @@
                   <th scope="col" class="sort" data-sort="name">Item name</th>
                   <th scope="col" class="sort" data-sort="budget">Budget</th>
                   <th scope="col" class="sort" data-sort="status">Status</th>
-                  <th scope="col">Users</th>
+                  <th scope="col" class="sort" data-sort="orders">Orders</th>
                   <th scope="col" class="sort" data-sort="completion">Unit price</th>
                   <th scope="col"></th>
                 </tr>
@@ -58,7 +58,7 @@
                     </div>
                   </th>
                   <td class="budget">
-                    R$ 2500,00
+                    R$ {{ demand.value_bought|floatformat:2 }}
                   </td>
                   <td>
                     <span class="badge badge-dot mr-4">
@@ -66,7 +66,7 @@
                     </span>
                   </td>
                   <td>
-                    <div class="avatar-group">
+                    <!-- <div class="avatar-group">
                       <a href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip" data-original-title="Ryan Tompson">
                         <img alt="Image placeholder" src="/static/assets/img/theme/team-1.jpg">
                       </a>
@@ -79,7 +79,10 @@
                       <a href="#" class="avatar avatar-sm rounded-circle" data-toggle="tooltip" data-original-title="Jessica Doe">
                         <img alt="Image placeholder" src="/static/assets/img/theme/team-4.jpg">
                       </a>
-                    </div>
+                    </div> -->
+                    {% if demand.pending_orders == 0 %} <a href="{% url 'demand_list_orders' demand.id %}">Show</a>
+                    {% else %} <a class="text-red" href="{% url 'demand_list_orders' demand.id %}">{{ demand.pending_orders }} Pending</a>
+                    {% endif %}
                   </td>
                   <td>
                     R$ {{ demand.unit_price|floatformat:2 }}
@@ -113,7 +116,7 @@
                     </a>
                   </li>
                   {% for page in demand_list.paginator.page_range %}
-                  {% if maquinas.number == pagina %}
+                  {% if demand_list.number == page %}
                   <li class="page-item active">
                     <a class="page-link" href="#">{{page}}</a>
                   </li>

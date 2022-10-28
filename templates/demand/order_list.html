@@ -1,0 +1,176 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Tables {% endblock title %}
+
+{% block content %}
+
+
+<div class="header pb-6 d-flex align-items-center" >
+  <!-- Mask -->
+  <span class="mask bg-gradient-default opacity-8" style="background: radial-gradient(circle, #395820 0, #1b2e0f 100%) !important"></span>
+  <!-- Header container -->
+  
+  <div class="container-fluid d-flex align-items-center">
+    <div class="row">
+      <div class="col-xl-12">
+        <br><br>
+        <h1 class="display-2 text-white"> 
+          Demands
+        </h1>
+        <p class="text-white mt-0 mb-5">Available demands for your user.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Page content -->
+
+  
+  <div class="container-fluid mt--6" style="background: #9bbf7f !important;">
+    <div class="row">
+      <div class="col">
+        <div class="card">
+            <br>
+            <div class="row" style="margin-left: 1%;">
+                <ul class="nav nav-tabs">
+                    <li class="nav-item" role="presentation" data-status="p">
+                        <a class="nav-link {% if status == 'p' %} active {% endif %}" href="{% url 'demand_list_orders' demand.id %}?status=p">Pending</a>
+                    </li>
+                    <li class="nav-item" role="presentation" data-status="a">
+                        <a class="nav-link {% if status == 'a' %} active {% endif %}" href="{% url 'demand_list_orders' demand.id %}?status=a">Accepted</a>
+                    </li>
+                    <li class="nav-item" role="presentation" data-status="r">
+                        <a class="nav-link {% if status == 'r' %} active {% endif %}" href="{% url 'demand_list_orders' demand.id %}?status=r">Refused</a>
+                    </li>
+                    <li class="nav-item" role="presentation" data-status="f">
+                        <a class="nav-link {% if status == 'f' %} active {% endif %}" href="{% url 'demand_list_orders' demand.id %}?status=f">Finished</a>
+                    </li>
+                </ul>
+            </div>
+            <br>
+            <div class="table-responsive">
+                <table class="table align-items-center table-flush">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col" class="sort" data-sort="name">Item name</th>
+                            <th scope="col" class="sort" data-sort="address">Address</th>
+                            <th scope="col" class="sort" data-sort="quantity">Quantity</th>
+                            <th scope="col">Total price</th>
+                            {% if status == 'p' or status == 'a'%}
+                            <th scope="col"></th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody class="list">
+                        {% for order in orders_list %}
+                        <tr>
+                            <th scope="row">
+                                <div class="media align-items-center">
+                                    <div class="media-body">
+                                        <span class="name mb-0 text-sm">{{ order.address_demand.demand.item }}</span>
+                                    </div>
+                                </div>
+                            </th>
+                            <td>
+                                <span class="badge badge-dot mr-4">
+                                    <span class="address">{{ order.address_demand.address }}</span>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-dot mr-4">
+                                    <span class="quantity">{{ order.quantity }}</span>
+                                </span>
+                            </td>
+                            <td>
+                                R$ {{ order.total_price|floatformat:2 }}
+                            </td>
+                            {% if status == 'p' or status == 'a'%}
+                            <td class="text-right">
+                                <div class="dropdown">
+                                  <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                  </a>
+                                  <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                    {% if status == 'p' %}
+                                    <a class="dropdown-item status-demand" href="#" value="{{ order.id }}" data-status="a">Accept</a>
+                                    <a class="dropdown-item status-demand" href="#" value="{{ order.id }}" data-status="r">Reject</a>
+                                    {% elif status == 'a' %}
+                                    <a class="dropdown-item status-demand" href="#" value="{{ order.id }}" data-status="f">Finish</a>
+                                    {% endif %}
+                                  </div>
+                                </div>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+          <!-- Card footer -->
+          <div class="card-footer py-4">
+            <nav aria-label="...">
+              {% if orders_list.has_other_pages %}
+              <ul class="pagination justify-content-end mb-0">
+                  <li class="page-item {% if not orders_list.has_previous %} disabled {% endif %}">
+                    <a class="page-link" href="{% if orders_list.has_previous %} ?page={{ orders_list.previous_page_number }} {% else %} # {% endif %}" tabindex="-1">
+                      <i class="fas fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                  {% for page in orders_list.paginator.page_range %}
+                  {% if orders_list.number == page %}
+                  <li class="page-item active">
+                    <a class="page-link" href="#">{{page}}</a>
+                  </li>
+                  {% else %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{page}}">{{page}}</a>
+                  </li>
+                  {% endif %}
+                  {% endfor %}
+                  <li class="page-item {% if not orders_list.has_next %} disabled {% endif %}">
+                    <a class="page-link" href="{% if orders_list.has_next %} ?page={{ orders_list.next_page_number }} {% else %} # {% endif %}">
+                      <i class="fas fa-angle-right"></i>
+                      <span class="sr-only">Next</span>
+                    </a>
+                  </li>
+              </ul>
+              {% endif %}
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% include "includes/footer.html" %}
+
+  </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+<script>
+    $('.status-demand').click(function(){
+      var status = $(this).attr('data-status');
+      var baseUrl = "{% url 'update_order_status' 111 %}";
+      baseUrl = baseUrl.replace("111", $(this).attr('value'));
+        $.ajax({
+                 type: "PUT",
+                 url: baseUrl,
+                 headers:{'X-CSRFToken':'{{csrf_token}}'},
+                 data: JSON.stringify({
+                          'status': status
+                        }),
+                 dataType: "json",
+                 success: function(response) {
+                  location.reload();
+                  }
+    
+            });
+    
+      });
+  
+</script>
+{% endblock javascripts %}
