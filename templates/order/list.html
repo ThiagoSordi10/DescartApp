@@ -1,0 +1,121 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Tables {% endblock title %}
+
+{% block content %}
+
+
+<div class="header pb-6 d-flex align-items-center" >
+  <!-- Mask -->
+  <span class="mask bg-gradient-default opacity-8" style="background: radial-gradient(circle, #395820 0, #1b2e0f 100%) !important"></span>
+  <!-- Header container -->
+  
+  <div class="container-fluid d-flex align-items-center">
+    <div class="row">
+      <div class="col-xl-12">
+        <br><br>
+        <h1 class="display-2 text-white"> 
+          Order
+        </h1>
+        <p class="text-white mt-0 mb-5">List with all your orders.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+  
+  <!-- Page content -->
+  <div class="container-fluid mt--6" style="background: #9bbf7f !important;">
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <br>
+          <div class="text-right" style="margin-right: 5%;">
+            <a href="{% url 'order_list_demand' %}" class="btn btn-sm btn-neutral">New</a>
+            <a href="#" class="btn btn-sm btn-neutral">Filters</a>
+          </div>
+          <br>
+          <!-- Light table -->
+          <div class="table-responsive">
+            <table class="table align-items-center table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" class="sort" data-sort="name">Item name</th>
+                  <th scope="col" class="sort" data-sort="budget">Address</th>
+                  <th scope="col" class="sort" data-sort="status">Quantity</th>
+                  <th scope="col">Total price</th>
+                </tr>
+              </thead>
+              <tbody class="list">
+                {% for order in order_list %}
+                <tr>
+                  <th scope="row">
+                    <div class="media align-items-center">
+                      <div class="media-body">
+                        <span class="name mb-0 text-sm">{{ order.address_demand.demand.item }}</span>
+                      </div>
+                    </div>
+                  </th>
+                  <td>
+                    <span class="badge badge-dot mr-4">
+                      <span class="status">{{ order.address_demand.address }}</span>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge badge-dot mr-4">
+                      <span class="status">{{ order.quantity|floatformat:2 }} {{ order.address_demand.demand.measure }}</span>
+                    </span>
+                  </td>
+                  <td>
+                    R$ {{ order.total_price|floatformat:2 }}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <!-- Card footer -->
+          <div class="card-footer py-4">
+            <nav aria-label="...">
+              {% if order_list.has_other_pages %}
+              <ul class="pagination justify-content-end mb-0">
+                  <li class="page-item {% if not order_list.has_previous %} disabled {% endif %}">
+                    <a class="page-link" href="{% if order_list.has_previous %} ?page={{ order_list.previous_page_number }} {% else %} # {% endif %}" tabindex="-1">
+                      <i class="fas fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                  {% for page in order_list.paginator.page_range %}
+                  {% if order_list.number == page %}
+                  <li class="page-item active">
+                    <a class="page-link" href="#">{{page}}</a>
+                  </li>
+                  {% else %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{page}}">{{page}}</a>
+                  </li>
+                  {% endif %}
+                  {% endfor %}
+                  <li class="page-item {% if not order_list.has_next %} disabled {% endif %}">
+                    <a class="page-link" href="{% if order_list.has_next %} ?page={{ order_list.next_page_number }} {% else %} # {% endif %}">
+                      <i class="fas fa-angle-right"></i>
+                      <span class="sr-only">Next</span>
+                    </a>
+                  </li>
+              </ul>
+              {% endif %}
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% include "includes/footer.html" %}
+
+  </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}{% endblock javascripts %}
