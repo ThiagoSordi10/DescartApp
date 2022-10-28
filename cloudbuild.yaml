@@ -22,6 +22,7 @@ steps:
       - '--build-arg'
       - 'ENV_TYPE=${_ENV_TYPE}'
     id: Build
+    timeout: 1800s
 
   # 2. Docker push to Google Artifact Registry
   - name: gcr.io/cloud-builders/docker
@@ -62,6 +63,7 @@ steps:
     entrypoint: gcloud
 
 # Store images in Google Artifact Registry
+timeout: 1800s
 images:
   - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA'
 
