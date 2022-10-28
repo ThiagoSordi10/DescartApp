@@ -7,7 +7,7 @@ from django.core.exceptions import PermissionDenied
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Sum
 from core.views_mixins import AjaxResponseMixin, JsonRequestResponseMixin, JSONResponseMixin
 # from braces.views import AjaxResponseMixin, JsonRequestResponseMixin
 from .models import Demand, Address, AddressDemand
@@ -80,6 +80,7 @@ class DemandListView(BaseDemand, ListView):
 
         for demand in demands:
             demand.pending_orders = Order.objects.filter(address_demand__demand = demand, status='p').count()
+            demand.value_bought = Order.objects.filter(address_demand__demand = demand, status='f').aggregate(Sum('total_price'))['total_price__sum']
 
         paginator = Paginator(demands, 6)
         page = self.request.GET.get('page')
