@@ -140,7 +140,7 @@
     });
 
    $(".tr-demand").click(function(){
-    window.location = $(this).attr("data-href")+"?city=Santa Maria";
+    window.location = $(this).attr("data-href")+"?city="+$("#input-city").val();
   });
 </script>
 {% endblock javascripts %}
