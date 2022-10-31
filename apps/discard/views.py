@@ -108,7 +108,7 @@ class DiscardDemandsListView(BaseOrder, ListView):
         context = super().get_context_data(**kwargs)
         city = self.request.GET.get('city', None)
         filter_city = Q(addressdemand__address__city__icontains=city.lower()) if city else Q()
-        demands = Demand.objects.filter(filter_city).distinct()
+        demands = Demand.objects.filter(filter_city, status='o').distinct()
 
         paginator = Paginator(demands, 6)
         page = self.request.GET.get('page')
