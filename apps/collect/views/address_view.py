@@ -45,6 +45,7 @@ class AdressCreateView(BaseAddress, CreateView):
         address = form.save(commit = False)
         address.collector = self.request.user.collector
         address.save()
+        self.request.session['success'] = "Address saved succesfully"
         return HttpResponseRedirect(reverse_lazy("list_address"))
 
 
@@ -66,6 +67,7 @@ class AddressListView(BaseAddress, ListView):
         addresses_page = paginator.get_page(page)
 
         context['address_list'] = addresses_page
+        context['success'] = self.request.session.pop('success', None) 
         return context
 
 
@@ -80,6 +82,7 @@ class AddressUpdateView(BaseDetailAddress, UpdateView):
 
     def form_valid(self, form):
         address = form.save(commit = True)
+        self.request.session['success'] = "Address updated succesfully"
         return HttpResponseRedirect(reverse_lazy("list_address"))
 
 
@@ -89,4 +92,5 @@ class AddressDeleteView(JSONResponseMixin, AjaxResponseMixin, BaseDetailAddress,
     def delete_ajax(self, request, *args, **kwargs):
         address = self.get_object()
         address.logic_delete(request.user)
+        self.request.session['success'] = "Address deleted succesfully"
         return self.render_json_response({})
