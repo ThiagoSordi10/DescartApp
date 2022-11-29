@@ -19,10 +19,14 @@
         </h1>
         <p class="text-white mt-0 mb-5">List with all your addresses.</p>
       </div>
+      {% if success %}
+      <div class="alert alert-success" role="alert" style="margin-top:5%">
+        {{ success }}
+      </div>
+      {% endif %}
     </div>
   </div>
 </div>
-  
   <!-- Page content -->
   <div class="container-fluid mt--6" style="background: #9bbf7f !important;">
     <div class="row">
@@ -123,18 +127,19 @@
 <script>
 
     $('.delete-address').click(function(){
-    
-    var baseUrl = "{% url 'delete_address' 111 %}";
-    baseUrl = baseUrl.replace("111", $(this).attr('value'));
-      $.ajax({
-               type: "DELETE",
-               url: baseUrl,
-               headers:{'X-CSRFToken':'{{csrf_token}}'},
-               success: function(response) {
-                location.reload();
-                }
-  
+      if (confirm("Do you really want to delete this address (all related demands will remain existing)?") == true) {
+        var baseUrl = "{% url 'delete_address' 111 %}";
+        baseUrl = baseUrl.replace("111", $(this).attr('value'));
+          $.ajax({
+                  type: "DELETE",
+                  url: baseUrl,
+                  headers:{'X-CSRFToken':'{{csrf_token}}'},
+                  success: function(response) {
+                    location.reload();
+                    }
+      
           });
+      }
   
     })
   </script>
