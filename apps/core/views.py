@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.urls import reverse_lazy
-from django.views.generic import CreateView
+from django.views.generic import CreateView, TemplateView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.forms import BaseModelForm
 from django.http.response import HttpResponse
@@ -99,6 +99,9 @@ class SignUpUserDiscardView(SignUpUserView):
 
     def form_invalid(self, form: BaseModelForm) -> HttpResponse:
         return super(SignUpUserDiscardView, self).form_invalid(form)
+
+class HomeView(TemplateView):
+    template_name: str = 'home.html'
 
 
 class LoginUserView(UserAuthenticatedView, LoginView):

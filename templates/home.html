@@ -1,0 +1,30 @@
+
+
+{% extends 'layouts/base-fullscreen.html' %}
+
+{% block header %}
+    {% with display_header=False %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock header %}
+
+{% block title %} Home {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load static %}
+
+{% block content %}
+
+    <!-- Page content -->  
+    <div class="header bg-gradient-primary py-7 py-lg-8" style="background: linear-gradient(87deg, #395820 0, #1b2e0f 100%) !important">
+        <div class="container text-center" style="margin-top: 11%; margin-bottom: 11%;">
+            <img src="{% static 'assets/img/brand/descartapp.png' %}" alt="DescartApp Logo">
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}{% endblock javascripts %}
