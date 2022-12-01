@@ -43,6 +43,7 @@
                 <tr>
                   <th scope="col" class="sort" data-sort="name">Item name</th>
                   <th scope="col" class="sort" data-sort="budget">Address</th>
+                  <th scope="col" class="sort" data-sort="budget">Status</th>
                   <th scope="col" class="sort" data-sort="status">Quantity</th>
                   <th scope="col">Total price</th>
                 </tr>
@@ -60,6 +61,11 @@
                   <td>
                     <span class="badge badge-dot mr-4">
                       <span class="status">{{ order.address_demand.address }}</span>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge badge-dot mr-4">
+                      <span class="status">{{ order.get_status_display }}</span>
                     </span>
                   </td>
                   <td>
