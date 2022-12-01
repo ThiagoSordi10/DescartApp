@@ -1,5 +1,11 @@
 {% extends 'layouts/base-fullscreen.html' %}
 
+{% block header %}
+    {% with display_header=True %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock header %}
+
 {% block title %} Sign Up {% endblock title %}
 
 <!-- Specific CSS goes HERE -->
