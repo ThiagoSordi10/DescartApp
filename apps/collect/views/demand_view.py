@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
 from django.http import HttpResponseRedirect
@@ -10,32 +9,16 @@ from django.core.paginator import Paginator
 from django.db.models import Q, Sum
 from core.views_mixins import AjaxResponseMixin, JsonRequestResponseMixin, JSONResponseMixin
 # from braces.views import AjaxResponseMixin, JsonRequestResponseMixin
-from .models import Demand, Address, AddressDemand
-from .forms import AdressForm, DemandForm, DemandUpdateForm, DemandAddressesForm
-from core.models import Collector
+from collect.models import Demand, AddressDemand
+from collect.forms import DemandForm, DemandUpdateForm, DemandAddressesForm
 from discard.models import Order
+from .base_view import Authorize
 
-class Authorize():
-
-    def dispatch(self, request, *args, **kwargs):
-        handler = super().dispatch(request, *args, **kwargs)
-        try: 
-            user = Collector.objects.get(user = self.request.user)
-            return handler
-        except Collector.DoesNotExist:
-            raise PermissionDenied
 
 class BaseDemand(Authorize):
 
     context_object_name = "demand"
     model = Demand
-    success_url = reverse_lazy("list_demand")
-
-    
-class BaseAddress(Authorize):
-
-    context_object_name = "address"
-    model = Address
     success_url = reverse_lazy("list_demand")
 
 
@@ -147,18 +130,6 @@ class DemandAddressesView(BaseDetailDemand, UpdateView):
         AddressDemand.objects.filter(demand=demand).exclude(address__in=form.cleaned_data['addresses']).delete()
         return HttpResponseRedirect(self.success_url)
 
-
-@method_decorator(login_required, name='dispatch')
-class AdressCreateView(BaseAddress, CreateView):
-    
-    form_class = AdressForm
-    template_name = "address/new.html"
-
-    def form_valid(self, form):
-        adress = form.save(commit = False)
-        adress.collector = self.request.user.collector
-        adress.save()
-        return HttpResponseRedirect(reverse_lazy("list_demand"))
 
 @method_decorator(login_required, name='dispatch')
 class CollectOrdersListView(BaseDetailDemand, DetailView):

@@ -94,6 +94,7 @@
                       </a>
                       <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                         <a class="dropdown-item" href="{% url 'update_demand' demand.id %}">Edit</a>
+                        <a class="dropdown-item" href="{% url 'demand_address' demand.id %}">Add/remove address</a>
                         <a class="dropdown-item status-demand" href="#" value="{{ demand.id }}" data-status="{{demand.status}}">{% if demand.status == 'o' %}Close{% else %}Open{% endif %} demand</a>
                         <a class="dropdown-item delete-demand" href="#" value="{{ demand.id }}">Delete</a>
                       </div>
@@ -151,44 +152,45 @@
 
 <script>
   $('.status-demand').click(function(){
-    var status = $(this).attr('data-status');
-    if(status == 'o'){
-      status = 'c';
-    }else{
-      status = 'o';
-    }
-    var baseUrl = "{% url 'update_demand_status' 111 %}";
-    baseUrl = baseUrl.replace("111", $(this).attr('value'));
-      $.ajax({
-               type: "PUT",
-               url: baseUrl,
-               headers:{'X-CSRFToken':'{{csrf_token}}'},
-               data: JSON.stringify({
-                        'status': status
-                      }),
-               dataType: "json",
-               success: function(response) {
-                location.reload();
-                }
-  
-          });
-  
+    if (confirm("Do you really want to update this demand status?") == true) {
+      var status = $(this).attr('data-status');
+      if(status == 'o'){
+        status = 'c';
+      }else{
+        status = 'o';
+      }
+      var baseUrl = "{% url 'update_demand_status' 111 %}";
+      baseUrl = baseUrl.replace("111", $(this).attr('value'));
+        $.ajax({
+                type: "PUT",
+                url: baseUrl,
+                headers:{'X-CSRFToken':'{{csrf_token}}'},
+                data: JSON.stringify({
+                          'status': status
+                        }),
+                dataType: "json",
+                success: function(response) {
+                  location.reload();
+                  }
+    
+        });
+      }
     });
 
     $('.delete-demand').click(function(){
-    
-    var baseUrl = "{% url 'delete_demand' 111 %}";
-    baseUrl = baseUrl.replace("111", $(this).attr('value'));
-      $.ajax({
-               type: "DELETE",
-               url: baseUrl,
-               headers:{'X-CSRFToken':'{{csrf_token}}'},
-               success: function(response) {
-                location.reload();
-                }
-  
+      if (confirm("Do you really want to delete this demand?") == true) {
+        var baseUrl = "{% url 'delete_demand' 111 %}";
+        baseUrl = baseUrl.replace("111", $(this).attr('value'));
+          $.ajax({
+                  type: "DELETE",
+                  url: baseUrl,
+                  headers:{'X-CSRFToken':'{{csrf_token}}'},
+                  success: function(response) {
+                    location.reload();
+                    }
+      
           });
-  
+        }
     })
   </script>
 
