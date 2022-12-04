@@ -9,8 +9,8 @@ from django.core.paginator import Paginator
 from django.db.models import Q, Sum
 from core.views_mixins import AjaxResponseMixin, JsonRequestResponseMixin, JSONResponseMixin
 # from braces.views import AjaxResponseMixin, JsonRequestResponseMixin
-from ..models import Demand, AddressDemand
-from ..forms import DemandForm, DemandUpdateForm, DemandAddressesForm
+from collect.models import Demand, AddressDemand
+from collect.forms import DemandForm, DemandUpdateForm, DemandAddressesForm
 from discard.models import Order
 from .base_view import Authorize
 
