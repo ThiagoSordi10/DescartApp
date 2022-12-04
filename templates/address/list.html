@@ -1,0 +1,147 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Tables {% endblock title %}
+
+{% block content %}
+
+
+<div class="header pb-6 d-flex align-items-center" >
+  <!-- Mask -->
+  <span class="mask bg-gradient-default opacity-8" style="background: radial-gradient(circle, #395820 0, #1b2e0f 100%) !important"></span>
+  <!-- Header container -->
+  
+  <div class="container-fluid d-flex align-items-center">
+    <div class="row">
+      <div class="col-xl-12">
+        <br><br>
+        <h1 class="display-2 text-white"> 
+          Addresses
+        </h1>
+        <p class="text-white mt-0 mb-5">List with all your addresses.</p>
+      </div>
+      {% if success %}
+      <div class="alert alert-success" role="alert" style="margin-top:5%">
+        {{ success }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+  <!-- Page content -->
+  <div class="container-fluid mt--6" style="background: #9bbf7f !important;">
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <br>
+          <div class="text-right" style="margin-right: 5%;">
+            <a href="{% url 'create_adress' %}" class="btn btn-sm btn-neutral">New</a>
+            <a href="#" class="btn btn-sm btn-neutral">Filters</a>
+          </div>
+          <br>
+          <!-- Light table -->
+          <div class="table-responsive">
+            <table class="table align-items-center table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" class="sort" data-sort="name">Address</th>
+                  <th scope="col" class="sort" data-sort="budget">Number of demands</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody class="list">
+                {% for address in address_list %}
+                <tr>
+                  <th scope="row">
+                    <div class="media align-items-center">
+                      <div class="media-body">
+                        <span class="name mb-0 text-sm">{{ address.street }}, {{ address.number }} {% if address.complement != "" %}({{ address.complement }}){% endif %}, {{ address.district }} - {{ address.city }}/{{ address.state }}</span>
+                      </div>
+                    </div>
+                  </th>
+                  <td>
+                    {% if address.number_demands == 0 %} No demands
+                    {% else %} {{ address.number_demands }} demand(s)
+                    {% endif %}
+                  </td>
+                  <td class="text-right">
+                    <div class="dropdown">
+                      <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v"></i>
+                      </a>
+                      <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                        <a class="dropdown-item" href="{% url 'update_address' address.id %}">Edit</a>
+                        <a class="dropdown-item delete-address" href="#" value="{{ address.id }}">Delete</a>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <!-- Card footer -->
+          <div class="card-footer py-4">
+            <nav aria-label="...">
+              {% if address_list.has_other_pages %}
+              <ul class="pagination justify-content-end mb-0">
+                  <li class="page-item {% if not address_list.has_previous %} disabled {% endif %}">
+                    <a class="page-link" href="{% if address_list.has_previous %} ?page={{ address_list.previous_page_number }} {% else %} # {% endif %}" tabindex="-1">
+                      <i class="fas fa-angle-left"></i>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                  {% for page in address_list.paginator.page_range %}
+                  {% if address_list.number == page %}
+                  <li class="page-item active">
+                    <a class="page-link" href="#">{{page}}</a>
+                  </li>
+                  {% else %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{page}}">{{page}}</a>
+                  </li>
+                  {% endif %}
+                  {% endfor %}
+                  <li class="page-item {% if not address_list.has_next %} disabled {% endif %}">
+                    <a class="page-link" href="{% if address_list.has_next %} ?page={{ address_list.next_page_number }} {% else %} # {% endif %}">
+                      <i class="fas fa-angle-right"></i>
+                      <span class="sr-only">Next</span>
+                    </a>
+                  </li>
+              </ul>
+              {% endif %}
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% include "includes/footer.html" %}
+
+  </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+<script>
+
+    $('.delete-address').click(function(){
+      if (confirm("Do you really want to delete this address (all related demands will remain existing)?") == true) {
+        var baseUrl = "{% url 'delete_address' 111 %}";
+        baseUrl = baseUrl.replace("111", $(this).attr('value'));
+          $.ajax({
+                  type: "DELETE",
+                  url: baseUrl,
+                  headers:{'X-CSRFToken':'{{csrf_token}}'},
+                  success: function(response) {
+                    location.reload();
+                    }
+      
+          });
+      }
+  
+    })
+  </script>
+
+{% endblock javascripts %}

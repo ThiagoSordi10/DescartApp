@@ -153,22 +153,24 @@
 {% block javascripts %}
 <script>
     $('.status-demand').click(function(){
-      var status = $(this).attr('data-status');
-      var baseUrl = "{% url 'update_order_status' 111 %}";
-      baseUrl = baseUrl.replace("111", $(this).attr('value'));
-        $.ajax({
-                 type: "PUT",
-                 url: baseUrl,
-                 headers:{'X-CSRFToken':'{{csrf_token}}'},
-                 data: JSON.stringify({
-                          'status': status
-                        }),
-                 dataType: "json",
-                 success: function(response) {
-                  location.reload();
-                  }
-    
-            });
+      if (confirm("Do you really want to update the order's status?") == true) {
+        var status = $(this).attr('data-status');
+        var baseUrl = "{% url 'update_order_status' 111 %}";
+        baseUrl = baseUrl.replace("111", $(this).attr('value'));
+          $.ajax({
+                  type: "PUT",
+                  url: baseUrl,
+                  headers:{'X-CSRFToken':'{{csrf_token}}'},
+                  data: JSON.stringify({
+                            'status': status
+                          }),
+                  dataType: "json",
+                  success: function(response) {
+                    location.reload();
+                    }
+      
+          });
+        }
     
       });
   

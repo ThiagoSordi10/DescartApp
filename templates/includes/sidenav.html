@@ -45,6 +45,12 @@
               <span class="nav-link-text">Create Address</span>
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'tables' in segment %} active {% endif %}" href="{% url 'list_address' %}">
+              <i class="ni ni-bullet-list-67 text-default"></i>
+              <span class="nav-link-text">List Address</span>
+            </a>
+          </li>
           {% endif %}         
         </ul>
         <!-- Divider -->

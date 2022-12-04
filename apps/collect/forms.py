@@ -96,7 +96,7 @@ class DemandAddressesForm(forms.ModelForm):
         self.fields['demand'].required = False
 
 
-class AdressForm(forms.ModelForm):
+class AddressForm(forms.ModelForm):
 
     street = forms.CharField(
         widget=forms.TextInput(
@@ -155,6 +155,14 @@ class AdressForm(forms.ModelForm):
             }
         ))
     
+    class Meta:
+        model = Address
+        fields = ("street", "district", "number", "complement", "zip_code", "city", "state", "country")
+
+
+class AddressUpdateForm(AddressForm):
+
+
     class Meta:
         model = Address
         fields = ("street", "district", "number", "complement", "zip_code", "city", "state", "country")
