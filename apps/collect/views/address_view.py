@@ -7,7 +7,7 @@ from django.views.generic import CreateView, ListView, UpdateView, DeleteView, D
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
 from core.views_mixins import AjaxResponseMixin, JSONResponseMixin
-from collect..models import Address, Demand
+from collect.models import Address, Demand
 from collect.forms import AddressForm, AddressUpdateForm
 from .base_view import Authorize
 
